@@ -33,7 +33,7 @@ class WitioView(generic.View):
         print payload
         data = json.loads(payload)
         messaging_entries = data["entry"][0]
-        if "messaging" in messaging_entries and "message" in messaging_entries["messaging"]:
+        if "messaging" in messaging_entries and "message" in messaging_entries["messaging"][0]:
             for sender, message in self.messaging_events(messaging_entries):
                 print "Incoming from %s: %s" % (sender, message)
                 self.send_message(PAGE_ACCESS_TOKEN, sender, message)
