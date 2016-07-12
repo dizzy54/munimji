@@ -35,7 +35,7 @@ class WitioView(generic.View):
             print "Incoming from %s: %s" % (sender, message)
             self.send_message(PAGE_ACCESS_TOKEN, sender, message)
 
-    def messaging_events(payload):
+    def messaging_events(self, payload):
         """Generate tuples of (sender_id, message_text) from the
         provided payload.
         """
@@ -47,7 +47,7 @@ class WitioView(generic.View):
             else:
                 yield event["sender"]["id"], "I can't echo this"
 
-    def send_message(token, recipient, text):
+    def send_message(self, token, recipient, text):
         """Send the message text to recipient with id recipient.
         """
 
