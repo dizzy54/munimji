@@ -35,7 +35,7 @@ class WitioView(generic.View):
         if 'entry' in data:
             for sender, message in self.messaging_events(data):
                 print "Incoming from %s: %s" % (sender, message)
-                self.send_message(PAGE_ACCESS_TOKEN, sender, message)
+                # self.send_message(PAGE_ACCESS_TOKEN, sender, message)
             return HttpResponse()
 
     def messaging_events(self, data):
