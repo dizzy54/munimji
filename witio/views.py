@@ -1,7 +1,7 @@
 import json
 import requests
 # import re
-from pprint import pprint
+# from pprint import pprint
 # import settings
 
 from django.views import generic
@@ -10,11 +10,11 @@ from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-PAGE_ACCESS_TOKEN = "EAAEMEpmxWEIBAFnYxtPg3oZBCscZBojAeA0CQ0uYZCZAorsyT5RnfKwK7PIihZAgospbbfmP1DKtNW7rCUZCItVIxeJ71ZARxRZAMETqTA68PyaufWHE3wXoKjcE9tZBnGzhNxsI3b2efmxH2ZCmXc3BjsdxqWRusVMLGcOwfTufZCRGwZDZD"
+PAGE_ACCESS_TOKEN = "EAARlALJSWxoBANm5ybZAzd45BkXZCxZAr6bBZAiHXXdVVwYv4T6wmmII5X0aXUxqMgCQsC2Dshd8gCcYflZAAekFnsBGW2BVvC86w7aaRkzeNGgWn85V3iXb52GZChSsOZBBZCJYK790AaL5kAj2rvO4x5UW4iPmn2hBuZCeyZBB6KVgZDZD"
 VERIFY_TOKEN = "2550036"
 
 
-class WitioView(generic.view):
+class WitioView(generic.View):
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
