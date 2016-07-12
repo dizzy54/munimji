@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 PAGE_ACCESS_TOKEN = "EAARlALJSWxoBANm5ybZAzd45BkXZCxZAr6bBZAiHXXdVVwYv4T6wmmII5X0aXUxqMgCQsC2Dshd8gCcYflZAAekFnsBGW2BVvC86w7aaRkzeNGgWn85V3iXb52GZChSsOZBBZCJYK790AaL5kAj2rvO4x5UW4iPmn2hBuZCeyZBB6KVgZDZD"
-VERIFY_TOKEN = "2550036"
+VERIFY_TOKEN = "munimji_is_a_smartass"
 
 
 class WitioView(generic.View):
