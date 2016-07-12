@@ -3,5 +3,5 @@ from django.conf.urls import url
 from .views import WitioView
 
 urlpatterns = [
-    url(r'^witio/$', WitioView.as_view())
+    url(r'^$', WitioView.as_view())
 ]
