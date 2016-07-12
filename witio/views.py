@@ -32,18 +32,19 @@ class WitioView(generic.View):
         payload = request.body
         print payload
         data = json.loads(payload)
-        if 'entry' in data:
-            for sender, message in self.messaging_events(data):
+        messaging_entries = data["entry"][0]
+        if "messaging" in messaging_entries and "message" in messaging_entries["messaging"]:
+            for sender, message in self.messaging_events(messaging_entries):
                 print "Incoming from %s: %s" % (sender, message)
                 self.send_message(PAGE_ACCESS_TOKEN, sender, message)
             return HttpResponse()
 
-    def messaging_events(self, data):
+    def messaging_events(self, entries):
         """Generate tuples of (sender_id, message_text) from the
         provided payload.
         """
         # data = json.loads(payload)
-        messaging_events = data["entry"][0]["messaging"]
+        messaging_events = entries["messaging"]
         for event in messaging_events:
             if "message" in event and "text" in event["message"]:
                 yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape')
