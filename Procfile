@@ -1,0 +1,1 @@
+web: gunicorn munimji.wsgi --log-file -
