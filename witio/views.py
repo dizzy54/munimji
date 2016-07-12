@@ -34,6 +34,7 @@ class WitioView(generic.View):
         for sender, message in self.messaging_events(payload):
             print "Incoming from %s: %s" % (sender, message)
             self.send_message(PAGE_ACCESS_TOKEN, sender, message)
+        return HttpResponse()
 
     def messaging_events(self, payload):
         """Generate tuples of (sender_id, message_text) from the
