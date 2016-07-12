@@ -1,0 +1,4 @@
+Django==1.9.7
+gunicorn==19.6.0
+PyWit==0.4.0
+requests==2.10.0
