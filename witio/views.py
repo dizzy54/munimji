@@ -29,7 +29,7 @@ class WitioView(generic.View):
 
     def post(self, request, *args, **kwargs):
         print "Handling Messages"
-        payload = request.get_data()
+        payload = request.body
         print payload
         for sender, message in self.messaging_events(payload):
             print "Incoming from %s: %s" % (sender, message)
