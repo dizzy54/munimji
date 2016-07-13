@@ -3,6 +3,8 @@ import requests
 # import re
 # from pprint import pprint
 # import settings
+from wit import Wit
+from datetime import datetime
 
 from django.views import generic
 from django.http.response import HttpResponse
@@ -10,8 +12,9 @@ from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-PAGE_ACCESS_TOKEN = "EAARlALJSWxoBANm5ybZAzd45BkXZCxZAr6bBZAiHXXdVVwYv4T6wmmII5X0aXUxqMgCQsC2Dshd8gCcYflZAAekFnsBGW2BVvC86w7aaRkzeNGgWn85V3iXb52GZChSsOZBBZCJYK790AaL5kAj2rvO4x5UW4iPmn2hBuZCeyZBB6KVgZDZD"
-VERIFY_TOKEN = "munimji_is_a_smartass"
+PAGE_ACCESS_TOKEN = 'EAARlALJSWxoBANm5ybZAzd45BkXZCxZAr6bBZAiHXXdVVwYv4T6wmmII5X0aXUxqMgCQsC2Dshd8gCcYflZAAekFnsBGW2BVvC86w7aaRkzeNGgWn85V3iXb52GZChSsOZBBZCJYK790AaL5kAj2rvO4x5UW4iPmn2hBuZCeyZBB6KVgZDZD'
+VERIFY_TOKEN = 'munimji_is_a_smartass'
+WIT_ACCESS_TOKEN = 'JJ4K4KISLXHRRY2WQ4NU7PXRLEXUDMSL'
 
 
 class WitioView(generic.View):
@@ -34,9 +37,28 @@ class WitioView(generic.View):
         data = json.loads(payload)
         messaging_entries = data["entry"][0]
         if "messaging" in messaging_entries and "message" in messaging_entries["messaging"][0]:
+            # setup wit client
+            def send(request, response):
+                print(response['text'])
+
+            def set_split(request):
+                context = request['context']
+                entities = request['entities']
+                context['amount_split'] = 100
+                return context
+
+            actions = {
+                'send': send,
+                'setSplit': set_split,
+            }
+
+            wit_client = Wit(access_token=WIT_ACCESS_TOKEN, actions=actions)
+
             for sender, message in self.messaging_events(messaging_entries):
                 print "Incoming from %s: %s" % (sender, message)
-                self.send_message(PAGE_ACCESS_TOKEN, sender, message)
+                session_id = sender + datetime.now().replace(hours=0, minutes=0, seconds=0)
+                response_message = wit_client.run_actions()
+                self.send_message(PAGE_ACCESS_TOKEN, sender, response_message)
         return HttpResponse()
 
     def messaging_events(self, entries):
