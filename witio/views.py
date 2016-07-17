@@ -55,7 +55,7 @@ class WitioView(generic.View):
                 context['_fbid_'] = sender
                 session.wit_context = context
                 session.save()
-                wit_client = bot.MunimjiWitClient()
+                wit_client = bot.get_wit_client()
                 context = wit_client.run_actions(
                     session_id,
                     message,
