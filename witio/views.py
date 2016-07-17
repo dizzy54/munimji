@@ -58,7 +58,7 @@ class WitioView(generic.View):
                 wit_client = bot.get_wit_client()
                 print "context = %s" % context
                 context = wit_client.run_actions(
-                    session_id,
+                    'session_idtest',
                     message,
                     context,
                 )
