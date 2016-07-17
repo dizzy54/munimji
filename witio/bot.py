@@ -4,11 +4,11 @@ from django.conf import settings
 
 
 def _get_first_entity_value(entities, entity):
-    if entities[entity]:
+    if entity in entities:
         value_list = entities[entity]
-        value = value_list[0]
-        if value:
-            return value
+        value_first = value_list[0]
+        if 'value' in value_first:
+            return value_first['value']
     return None
 
 
