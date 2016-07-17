@@ -42,7 +42,7 @@ class WitioView(generic.View):
             for sender, message in self.messaging_events(messaging_entries):
                 print "Incoming from %s: %s" % (sender, message)
                 user_details = fb.get_user_details(sender)
-                session_id = sender + datetime.now().replace(hour=0, minute=0, second=0)
+                session_id = sender + str(datetime.now().replace(hour=0, minute=0, second=0))
                 user, created = Session.object.get_or_create(
                     first_name=user_details['first_name'],
                     last_name=user_details['last_name'],
