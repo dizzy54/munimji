@@ -13,7 +13,7 @@ def _get_first_entity_value(entities, entity):
 
 
 # mandatory action, triggered at wit response
-def _send(self, request, response):
+def _send(request, response):
     context = request['context']
     session_id = request['session_id']
     text = response['text']
@@ -28,13 +28,13 @@ def _send(self, request, response):
 
 
 # custom actions
-def _set_split(self, request):
+def _set_split(request):
     print 'setSplit triggered'
 
     context = request['context']
     entities = request['entities']
 
-    amount_of_money = self._get_first_entity_value(entities, 'amount_of_money')
+    amount_of_money = _get_first_entity_value(entities, 'amount_of_money')
     if amount_of_money:
         context['amount_split'] = amount_of_money
     else:
