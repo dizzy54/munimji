@@ -20,4 +20,4 @@ class Session(models.Model):
 
     session_id = models.CharField(max_length=60, primary_key=True)
 
-    wit_context = JSONField(default={})
+    wit_context = JSONField(default=dict)
