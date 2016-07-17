@@ -49,4 +49,4 @@ class MunimjiWitClient(Wit):
             'send': self._send,
             'setSplit': self._set_split,
         }
-        super(MunimjiWitClient, self).__init__(access_token=settings.WIT_ACCESS_TOKEN, actions=actions)
+        super(MunimjiWitClient, self).__init__(settings.WIT_ACCESS_TOKEN, actions=actions)
