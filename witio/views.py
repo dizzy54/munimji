@@ -39,32 +39,35 @@ class WitioView(generic.View):
         data = json.loads(payload)
         messaging_entries = data["entry"][0]
         if "messaging" in messaging_entries and "message" in messaging_entries["messaging"][0]:
-            for sender, message in self.messaging_events(messaging_entries):
-                print "Incoming from %s: %s" % (sender, message)
-                user_details = fb.get_user_details(sender)
-                now = datetime.now()
-                session_id = sender + str(now.year) + str(now.month) + str(now.day)
-                # print "length of session id = %s" % str(len(session_id))
-                session, created = Session.objects.get_or_create(
-                    first_name=user_details['first_name'],
-                    last_name=user_details['last_name'],
-                    fbid=sender,
-                    session_id=session_id,
-                )
-                # !maybe add a check to see if fbid already in context
-                context = session.wit_context
-                context['_fbid_'] = sender
-                session.wit_context = context
-                session.save()
-                wit_client = bot.get_wit_client()
-                print "context = %s" % context
-                context = wit_client.run_actions(
-                    session_id,
-                    message,
-                    context,
-                )
-                session.wit_context = context
-                session.save()
+            for sender, message, send_to_wit in self.messaging_events(messaging_entries):
+                if send_to_wit:
+                    print "Incoming from %s: %s" % (sender, message)
+                    user_details = fb.get_user_details(sender)
+                    now = datetime.now()
+                    session_id = sender + str(now.year) + str(now.month) + str(now.day)
+                    # print "length of session id = %s" % str(len(session_id))
+                    session, created = Session.objects.get_or_create(
+                        first_name=user_details['first_name'],
+                        last_name=user_details['last_name'],
+                        fbid=sender,
+                        session_id=session_id,
+                    )
+                    # !maybe add a check to see if fbid already in context
+                    context = session.wit_context
+                    context['_fbid_'] = sender
+                    session.wit_context = context
+                    session.save()
+                    wit_client = bot.get_wit_client()
+                    print "context = %s" % context
+                    context = wit_client.run_actions(
+                        session_id,
+                        message,
+                        context,
+                    )
+                    session.wit_context = context
+                    session.save()
+                else:
+                    fb.send_message(sender, message)
         return HttpResponse()
 
     def messaging_events(self, entries):
@@ -75,6 +78,6 @@ class WitioView(generic.View):
         messaging_events = entries["messaging"]
         for event in messaging_events:
             if "message" in event and "text" in event["message"]:
-                yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape')
+                yield event["sender"]["id"], event["message"]["text"].encode('unicode_escape'), True
             else:
-                yield event["sender"]["id"], "I can't echo this"
+                yield event["sender"]["id"], "I can't respond to this", False
