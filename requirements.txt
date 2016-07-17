@@ -5,4 +5,4 @@ psycopg2==2.6.2
 dj-database-url==0.4.1
 #PyWit==0.4.0
 #wit==3.5.0
--e git://github.com/wit-ai/pywit.git#egg=wit
+#-e git://github.com/wit-ai/pywit.git#egg=wit
