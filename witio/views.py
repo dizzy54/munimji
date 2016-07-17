@@ -46,26 +46,32 @@ class WitioView(generic.View):
                     now = datetime.now()
                     session_id = sender + str(now.year) + str(now.month) + str(now.day)
                     # print "length of session id = %s" % str(len(session_id))
-                    session, created = Session.objects.get_or_create(
-                        first_name=user_details['first_name'],
-                        last_name=user_details['last_name'],
-                        fbid=sender,
-                        session_id=session_id,
-                    )
-                    # !maybe add a check to see if fbid already in context
-                    context = session.wit_context
-                    context['_fbid_'] = sender
-                    session.wit_context = context
-                    session.save()
-                    wit_client = bot.get_wit_client()
-                    print "context = %s" % context
-                    context = wit_client.run_actions(
-                        session_id,
-                        message,
-                        context,
-                    )
-                    session.wit_context = context
-                    session.save()
+                    try:
+                        first_name = user_details['first_name']
+                        last_name = user_details['last_name']
+                    except KeyError:
+                        print "user details not found"
+                    else:
+                        session, created = Session.objects.get_or_create(
+                            first_name=first_name,
+                            last_name=last_name,
+                            fbid=sender,
+                            session_id=session_id,
+                        )
+                        # !maybe add a check to see if fbid already in context
+                        context = session.wit_context
+                        context['_fbid_'] = sender
+                        session.wit_context = context
+                        session.save()
+                        wit_client = bot.get_wit_client()
+                        print "context = %s" % context
+                        context = wit_client.run_actions(
+                            session_id,
+                            message,
+                            context,
+                        )
+                        session.wit_context = context
+                        session.save()
                 else:
                     # fb.send_message(sender, message)
                     pass
