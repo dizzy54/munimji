@@ -10,7 +10,7 @@ from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from users.models import Session
+from witio.models import Session
 import fb
 import bot
 from django.conf import settings
