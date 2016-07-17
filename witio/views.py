@@ -42,7 +42,8 @@ class WitioView(generic.View):
             for sender, message in self.messaging_events(messaging_entries):
                 print "Incoming from %s: %s" % (sender, message)
                 user_details = fb.get_user_details(sender)
-                session_id = sender + str(datetime.now().replace(hour=0, minute=0, second=0))
+                now = datetime.now()
+                session_id = sender + str(now.year) + str(now.month) + str(now.day)
                 # print "length of session id = %s" % str(len(session_id))
                 session, created = Session.objects.get_or_create(
                     first_name=user_details['first_name'],
@@ -58,7 +59,7 @@ class WitioView(generic.View):
                 wit_client = bot.get_wit_client()
                 print "context = %s" % context
                 context = wit_client.run_actions(
-                    'session_idtest',
+                    session_id,
                     message,
                     context,
                 )
