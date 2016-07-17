@@ -43,27 +43,29 @@ class WitioView(generic.View):
                 print "Incoming from %s: %s" % (sender, message)
                 user_details = fb.get_user_details(sender)
                 session_id = sender + str(datetime.now().replace(hour=0, minute=0, second=0))
-                user, created = Session.object.get_or_create(
+                session, created = Session.objects.get_or_create(
                     first_name=user_details['first_name'],
                     last_name=user_details['last_name'],
                     fbid=sender,
                     session_id=session_id,
                 )
                 # !maybe add a check to see if fbid already in context
-                context = user.wit_context
+                context = session.wit_context
                 context['_fbid_'] = sender
-                user.wit_context = context
-                user.save()
+                session.wit_context = context
+                session.save()
                 text = message.text
                 if message.attachments:
                     fb.send_message(sender, 'Sorry I can only process text messages for now.')
                 elif text:
                     wit_client = bot.MunimjiWitClient()
-                    wit_client.run_actions(
+                    context = wit_client.run_actions(
                         session_id,
                         text,
                         context,
                     )
+                    session.wit_context = context
+                    session.save()
         return HttpResponse()
 
     def messaging_events(self, entries):
