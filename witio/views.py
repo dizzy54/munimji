@@ -67,7 +67,8 @@ class WitioView(generic.View):
                     session.wit_context = context
                     session.save()
                 else:
-                    fb.send_message(sender, message)
+                    # fb.send_message(sender, message)
+                    pass
         return HttpResponse()
 
     def messaging_events(self, entries):
