@@ -1,6 +1,8 @@
 Django==1.9.7
 gunicorn==19.6.0
--e git://github.com/wit-ai/pywit.git#egg=pywit
 requests==2.10.0
 psycopg2==2.6.2
 dj-database-url==0.4.1
+PyWit==0.4.0
+wit==3.5.0
+simplejson==3.8.2
