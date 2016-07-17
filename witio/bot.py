@@ -1,9 +1,9 @@
-from wit import Wit
+import wit
 import fb
 from django.conf import settings
 
 
-class MunimjiWitClient(Wit):
+class MunimjiWitClient(wit.Wit):
     """setup a wit client with actions
     """
     def _get_first_entity_value(entities, entity):
