@@ -22,15 +22,15 @@ class MunimjiWitClient(Wit):
         recipient_id = context['_fbid_']
 
         if recipient_id:
-            print('send triggered with recipient id %s' % recipient_id)
-            print('text = %s' % text)
+            print 'send triggered with recipient id %s' % recipient_id
+            print 'text = %s' % text
             fb.send_message(recipient_id, text)
         else:
             print('couldn\'t find user for session %s' % session_id)
 
     # custom actions
     def _set_split(self, request):
-        print('setSplit triggered')
+        print 'setSplit triggered'
 
         context = request['context']
         entities = request['entities']
