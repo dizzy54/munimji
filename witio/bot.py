@@ -50,4 +50,4 @@ class MunimjiWitClient(wit.Wit):
             'setSplit': self._set_split,
         }
         print super(MunimjiWitClient, self).__str__()
-        wit.Wit.__init__(settings.WIT_ACCESS_TOKEN, actions=actions)
+        wit.Wit.__init__(self, settings.WIT_ACCESS_TOKEN, actions=actions)
