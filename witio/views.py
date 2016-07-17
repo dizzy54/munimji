@@ -55,14 +55,13 @@ class WitioView(generic.View):
                 context['_fbid_'] = sender
                 session.wit_context = context
                 session.save()
-                text = message.text
                 if message.attachments:
                     fb.send_message(sender, 'Sorry I can only process text messages for now.')
-                elif text:
+                elif message.text:
                     wit_client = bot.MunimjiWitClient()
                     context = wit_client.run_actions(
                         session_id,
-                        text,
+                        message.text,
                         context,
                     )
                     session.wit_context = context
