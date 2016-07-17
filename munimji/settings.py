@@ -22,6 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '170pk&#95pdz7@8c%hy$+69c1-7s&(pq)s0=@x7wtgk4n7il4x'
 
+# custom keys
+PAGE_ACCESS_TOKEN = os.getenv('FB_PAGE_TOKEN', default='')
+VERIFY_TOKEN = os.getenv('FB_VERIFY_TOKEN', default='')
+WIT_ACCESS_TOKEN = os.getenv('WIT_TOKEN', default='')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'witio',
+    'users',
 ]
 
 MIDDLEWARE_CLASSES = [
