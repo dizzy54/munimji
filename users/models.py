@@ -19,8 +19,24 @@ class RegisteredUser(models.Model):
     friends = models.ManyToManyField(
         'self',
         symmetrical=False,
-        through='Relationship'
+        through='Relationship',
+        through_fields=('from_user', 'to_user'),
     )
+
+    def add_friend(self, friend_id):
+        """add existing user as friend
+        returns True if new friend added
+        """
+        if Relationship.objects.filter(from_user_id=self.pk, to_user_id=friend_id).exists():
+            return False
+        else:
+            friend = RegisteredUser.objects.filter(id=friend_id)
+            if friend.count() == 1:
+                friend = friend[0]
+                Relationship.objects.create(from_user=self, to_user=friend, balance=0.0)
+                return True
+            else:
+                return False
 
 
 class Relationship(models.Model):
@@ -30,14 +46,21 @@ class Relationship(models.Model):
 
     def update_symmetric_relation(self):
         if self.from_user in self.to_user.friends.all():
-            relation = self.to_user.relationship_set.filter(to_user_id=self.from_user_id)
-            relation.balance = -self.balance
+            # print 'if'
+            relation = Relationship.objects.get(from_user_id=self.to_user.pk, to_user_id=self.from_user.pk)
+            if abs(relation.balance + self.balance) >= 0.0001:
+                relation.balance = -self.balance
+                relation.save()
         else:
+            # print 'else'
             Relationship.objects.create(from_user=self.to_user, to_user=self.from_user, balance=-self.balance)
 
     def save(self, *args, **kwargs):
-        self.update_symmetric_relation()
+        # print 'from ' + self.from_user.first_name
+        # print 'to ' + self.to_user.first_name
+        # print 'balance = ' + str(self.balance)
         super(Relationship, self).save(*args, **kwargs)
+        self.update_symmetric_relation()
 
 
 class Transaction(models.Model):
@@ -59,7 +82,7 @@ class Transaction(models.Model):
 
     input_data = JSONField()
 
-    def update_bits(self, data):
+    def _update_bits(self, data):
         """
         creates transaction and adds to db from list of form
         [
@@ -75,18 +98,27 @@ class Transaction(models.Model):
         # create bit dictionary
         total_contribution = 0
         total_consumption = 0
-        contributer_list = []
+        contributor_list = []
+        user_id_list = [item['user_id'] for item in data]
+        # validate users
         for entry in data:
-            if RegisteredUser.objects.filter(pk=entry['user_id']).exists():
-                total_contribution += entry['contribution']
-                total_consumption += entry['consumption']
-                if entry['contribution'] > 0:
-                    contributer_list.add({
-                        'user_id': entry['user_id'],
-                        'contribution': entry['contribution']
-                    })
-            else:
+            if not RegisteredUser.objects.filter(id=entry['user_id']).exists():
                 return False
+        # setup
+        for entry in data:
+            total_contribution += entry['contribution']
+            total_consumption += entry['consumption']
+            if entry['contribution'] > 0:
+                contributor_list.append({
+                    'user_id': entry['user_id'],
+                    'contribution': entry['contribution']
+                })
+            # add as friend with rest of users
+            if len(user_id_list) > 1:
+                user_id_list = user_id_list[1:]
+                user = RegisteredUser.objects.get(id=entry['user_id'])
+                for friend_id in user_id_list:
+                    user.add_friend(friend_id)
 
         if total_consumption != total_contribution:
             return False
@@ -95,22 +127,23 @@ class Transaction(models.Model):
         for entry in data:
             consumer = RegisteredUser.objects.get(pk=entry['user_id'])
             net_consumption = entry['consumption'] - entry['contribution']
-            for contrib_entry in contributer_list:
-                contributer = RegisteredUser.objects.get(pk=contrib_entry['user_id'])
-                if consumer.pk == contributer.pk:
+            for contrib_entry in contributor_list:
+                contributor = RegisteredUser.objects.get(pk=contrib_entry['user_id'])
+                if consumer.pk == contributor.pk:
                     pass
                 else:
                     amount_owed_by_consumer = net_consumption * contrib_entry['contribution'] / total_contribution
                     TransactionBit.objects.create(
-                        from_user=contributer,
+                        from_user=contributor,
                         to_user=consumer,
                         transaction=self,
                         amount_owed_by_to_user=amount_owed_by_consumer,
                     )
 
-        # add input data to model
-        self.input_data = data
-        self.save()
+    def save(self, *args, **kwargs):
+        super(Transaction, self).save(*args, **kwargs)  # for transaction to link to bits
+        self._update_bits(self.input_data)
+        # super(Transaction, self).save(*args, **kwargs)  # to save updated bits
 
 
 class TransactionBit(models.Model):
@@ -128,8 +161,11 @@ class TransactionBit(models.Model):
         update relationship between users
         """
         # if relationship exists (assumes symmetry)
-        if self.to_user in self.for_user.friends.all():
-            relation = self.from_user.relationship_set.filter(to_user_id=self.to_user_id)
+        if self.to_user in self.from_user.friends.all():
+            relation = Relationship.objects.get(
+                from_user_id=self.from_user.pk,
+                to_user_id=self.to_user.pk
+            )
             relation.balance += amount
             relation.save()
         # if it doesn't, create new
