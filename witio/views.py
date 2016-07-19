@@ -50,7 +50,7 @@ class WitioView(generic.View):
                         first_name = user_details['first_name']
                         last_name = user_details['last_name']
                     except KeyError:
-                        print "user details not found"
+                        print "user details not found for fbid %s" % sender
                     else:
                         session, created = Session.objects.get_or_create(
                             first_name=first_name,

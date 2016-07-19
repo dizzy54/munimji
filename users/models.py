@@ -1,3 +1,149 @@
 from __future__ import unicode_literals
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
+
+
+class RegisteredUser(models.Model):
+
+    class Meta:
+        verbose_name = 'Registered user'
+        verbose_name_plural = 'Registered users'
+
+    def __str__(self):
+        return str(self.first_name + ' ' + self.last_name)
+
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    fbid = models.CharField(max_length=20)
+    friends = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        through='Relationship'
+    )
+
+
+class Relationship(models.Model):
+    from_user = models.ForeignKey(RegisteredUser, related_name='from_relationship')
+    to_user = models.ForeignKey(RegisteredUser, related_name='to_relationship')
+    balance = models.FloatField()
+
+    def update_symmetric_relation(self):
+        if self.from_user in self.to_user.friends.all():
+            relation = self.to_user.relationship_set.filter(to_user_id=self.from_user_id)
+            relation.balance = -self.balance
+        else:
+            Relationship.objects.create(from_user=self.to_user, to_user=self.from_user, balance=-self.balance)
+
+    def save(self, *args, **kwargs):
+        self.update_symmetric_relation()
+        super(Relationship, self).save(*args, **kwargs)
+
+
+class Transaction(models.Model):
+    class Meta:
+        verbose_name = 'Transaction'
+        verbose_name_plural = 'Transactions'
+
+    def __str__(self):
+        return str(self.modified)
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    users = models.ManyToManyField(
+        RegisteredUser,
+        through='TransactionBit',
+        through_fields=('transaction', 'from_user'),
+    )
+
+    input_data = JSONField()
+
+    def update_bits(self, data):
+        """
+        creates transaction and adds to db from list of form
+        [
+            {'user_id': 1, 'contribution': 500, 'consumption': 125},
+            ...
+            {}
+        ]
+        returns created = True / False
+        """
+        # delete existing bits, if any
+        self.users.clear()
+
+        # create bit dictionary
+        total_contribution = 0
+        total_consumption = 0
+        contributer_list = []
+        for entry in data:
+            if RegisteredUser.objects.filter(pk=entry['user_id']).exists():
+                total_contribution += entry['contribution']
+                total_consumption += entry['consumption']
+                if entry['contribution'] > 0:
+                    contributer_list.add({
+                        'user_id': entry['user_id'],
+                        'contribution': entry['contribution']
+                    })
+            else:
+                return False
+
+        if total_consumption != total_contribution:
+            return False
+
+        # add new bits
+        for entry in data:
+            consumer = RegisteredUser.objects.get(pk=entry['user_id'])
+            net_consumption = entry['consumption'] - entry['contribution']
+            for contrib_entry in contributer_list:
+                contributer = RegisteredUser.objects.get(pk=contrib_entry['user_id'])
+                if consumer.pk == contributer.pk:
+                    pass
+                else:
+                    amount_owed_by_consumer = net_consumption * contrib_entry['contribution'] / total_contribution
+                    TransactionBit.objects.create(
+                        from_user=contributer,
+                        to_user=consumer,
+                        transaction=self,
+                        amount_owed_by_to_user=amount_owed_by_consumer,
+                    )
+
+        # add input data to model
+        self.input_data = data
+        self.save()
+
+
+class TransactionBit(models.Model):
+    class Meta:
+        verbose_name = 'Transaction bit'
+        verbose_name_plural = 'Transaction bits'
+
+    from_user = models.ForeignKey(RegisteredUser, related_name='from_transaction_bit')
+    transaction = models.ForeignKey(Transaction)
+    to_user = models.ForeignKey(RegisteredUser, related_name='to_transaction_bit')
+    amount_owed_by_to_user = models.FloatField()
+
+    def _update_relationship(self, amount):
+        """
+        update relationship between users
+        """
+        # if relationship exists (assumes symmetry)
+        if self.to_user in self.for_user.friends.all():
+            relation = self.from_user.relationship_set.filter(to_user_id=self.to_user_id)
+            relation.balance += amount
+            relation.save()
+        # if it doesn't, create new
+        else:
+            Relationship.objects.create(from_user=self.from_user, to_user=self.to_user, balance=amount)
+
+    def save(self, *args, **kwargs):
+        """overriden to update relationship between from_user and to_user
+        """
+        self._update_relationship(amount=self.amount_owed_by_to_user)
+        super(TransactionBit, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """overriden to update relationship between from_user and to_user
+        """
+        self._update_relationship(amount=-self.amount_owed_by_to_user)
+        super(TransactionBit, self).delete(*args, **kwargs)

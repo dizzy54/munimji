@@ -43,6 +43,16 @@ def _set_split(request):
 
     return context
 
+def _register(request):
+    print 'register triggered'
+
+    context = request['context']
+    entities = request['entities']
+    fbid = context['_fbid_']
+
+    user_details = fb.get_user_details(fbid)
+
+    return context
 
 def get_wit_client():
     """
