@@ -25,7 +25,7 @@ def get_all_entity_values(entities, entity):
 
 def get_all_entity_values_as_string(entities, entity):
     value_list = get_all_entity_values(entities, entity)
-    list_string = ''.join(value_list)
+    list_string = ', '.join(value_list)
     if len(value_list) > 1:
         last_value = value_list[-1]
         last_value_length = len(last_value)
