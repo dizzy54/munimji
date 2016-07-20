@@ -62,8 +62,8 @@ def _set_split(request):
         print "payers = " + payers
         print "payees = " + payees
         context['amount_split'] = amount_of_money / len(get_all_entity_values(entities, 'payee'))
-        context['payers'] = payers
-        context['payees'] = payees
+        context['payer_string'] = payers
+        context['payee_string'] = payees
     else:
         context['amount_of_money'] = '0'
         context['amount_split'] = '0'
