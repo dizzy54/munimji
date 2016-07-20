@@ -29,7 +29,7 @@ class Session(models.Model):
     def register_user_with_fbid(self):
         """Register the user of current session with his / her fbid
         """
-        user = RegisteredUser.objects.create(
+        user = RegisteredUser.objects.get_or_create(
             first_name=self.first_name,
             last_name=self.last_name,
             fbid=self.fbid,
