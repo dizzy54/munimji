@@ -18,8 +18,7 @@ def get_all_entity_values(entities, entity):
         value_list = []
         for entry in value_holder:
             if 'value' in entry:
-                print "value = " + entity['value']
-                value_list.append(entity['value'])
+                value_list.append(entry['value'])
         return value_list
     return None
 
@@ -30,7 +29,6 @@ def get_all_entity_values_as_string(entities, entity):
     if len(value_list > 1):
         last_value = value_list[-1]
         last_value_length = len(last_value)
-        print "last value length = "+last_value_length
         list_string = list_string[:-(last_value_length + 1)] + ' and ' + last_value
     return list_string
 
