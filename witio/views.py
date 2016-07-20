@@ -58,6 +58,8 @@ class WitioView(generic.View):
                             fbid=sender,
                             session_id=session_id,
                         )
+                        if created:
+                            session.register_user_with_fbid()
                         # !maybe add a check to see if fbid already in context
                         context = session.wit_context
                         context['_fbid_'] = sender

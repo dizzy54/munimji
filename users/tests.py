@@ -94,7 +94,6 @@ class UsersTestCase(TestCase):
         self.assertEqual(c_a, -consumption)
         self.assertEqual(b_c, 0)
 
-
     def test_transaction_with_multiple_contributors(self):
         """tests if valid transaction and corresponding relations are created with multiple contributor
         """
