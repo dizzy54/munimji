@@ -7,7 +7,7 @@ def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS
         """Send the message text to recipient with id recipient.
         """
         if quick_replies and isinstance(quick_replies, list):
-            quick_replies_r = [{'content_type': 'text', 'title': q_text, 'payload': ''} for q_text in quick_replies]
+            quick_replies_r = [{'content_type': 'text', 'title': q_text, 'payload': q_text} for q_text in quick_replies]
             r = requests.post("https://graph.facebook.com/v2.6/me/messages",
                               params={"access_token": token},
                               data=json.dumps({
