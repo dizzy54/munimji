@@ -42,11 +42,12 @@ def _send(request, response):
     session_id = request['session_id']
     text = response['text']
     recipient_id = context['_fbid_']
+    quick_replies = response.get('quick_replies')
 
     if recipient_id:
         print 'send triggered with recipient id %s' % recipient_id
         print 'text = %s' % text
-        fb.send_message(recipient_id, text)
+        fb.send_message(recipient_id, text, quick_replies=quick_replies)
     else:
         print('couldn\'t find user for session %s' % session_id)
 

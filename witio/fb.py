@@ -3,17 +3,26 @@ import json
 from django.conf import settings
 
 
-def send_message(recipient, text, token=settings.PAGE_ACCESS_TOKEN):
+def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS_TOKEN):
         """Send the message text to recipient with id recipient.
         """
-
-        r = requests.post("https://graph.facebook.com/v2.6/me/messages",
-                          params={"access_token": token},
-                          data=json.dumps({
-                              "recipient": {"id": recipient},
-                              "message": {"text": text.decode('unicode_escape')}
-                          }),
-                          headers={'Content-type': 'application/json'})
+        if quick_replies and isinstance(quick_replies, list):
+            quick_replies_r = [{'content_type': 'text', 'title': q_text, 'payload': ''} for q_text in quick_replies]
+            r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+                              params={"access_token": token},
+                              data=json.dumps({
+                                  "recipient": {"id": recipient},
+                                  "message": {"text": text.decode('unicode_escape'), "quick_replies": quick_replies_r}
+                              }),
+                              headers={'Content-type': 'application/json'})
+        else:
+            r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+                              params={"access_token": token},
+                              data=json.dumps({
+                                  "recipient": {"id": recipient},
+                                  "message": {"text": text.decode('unicode_escape')}
+                              }),
+                              headers={'Content-type': 'application/json'})
         if r.status_code != requests.codes.ok:
             print r.text
 
