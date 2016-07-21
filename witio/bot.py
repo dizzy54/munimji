@@ -43,6 +43,7 @@ def _send(request, response):
     text = response['text']
     recipient_id = context['_fbid_']
     quick_replies = response.get('quick_replies')
+    print "quick replies = " + str(quick_replies)
 
     if recipient_id:
         print 'send triggered with recipient id %s' % recipient_id
