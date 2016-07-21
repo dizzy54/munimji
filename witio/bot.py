@@ -91,6 +91,13 @@ def _set_split(request):
     return context
 
 
+def _clear_context(request):
+    """clears context of all keys
+    """
+    context = {}
+    return context
+
+
 def _add_friend(request):
     print 'addFriend triggered'
     pass
@@ -103,5 +110,6 @@ def get_wit_client():
     actions = {
         'send': _send,
         'setSplit': _set_split,
+        'clearContext': _clear_context,
     }
     return Wit(access_token=settings.WIT_ACCESS_TOKEN, actions=actions)
