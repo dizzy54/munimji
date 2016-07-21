@@ -35,7 +35,7 @@ class WitioView(generic.View):
     def post(self, request, *args, **kwargs):
         print "Handling Messages"
         payload = request.body
-        print payload
+        # print payload
         data = json.loads(payload)
         messaging_entries = data["entry"][0]
         if "messaging" in messaging_entries and "message" in messaging_entries["messaging"][0]:

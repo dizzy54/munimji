@@ -42,7 +42,7 @@ def _send(request, response):
     session_id = request['session_id']
     text = response['text']
     recipient_id = context['_fbid_']
-    quick_replies = response.get('quick_replies')
+    quick_replies = response.get('quickreplies')
     print "quick replies = " + str(quick_replies)
 
     if recipient_id:
