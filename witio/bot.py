@@ -68,15 +68,15 @@ def _set_split(request):
     elif not payers:
         context['missing_payer'] = True
     elif not amount_of_money:
-        context['amount_of_money'] = True
+        context['missing_amount_of_money'] = True
         if not context.get('missing_payer'):
             del context['missing_payer']
     elif not payees:
         context['missing_payee'] = True
         if not context.get('missing_payer'):
             del context['missing_payer']
-        if not context.get('amount_of_money'):
-            del context['amount_of_money']
+        if not context.get('missing_amount_of_money'):
+            del context['missing_amount_of_money']
     else:
         context['amount_of_money'] = '0'
         context['amount_split'] = '0'
