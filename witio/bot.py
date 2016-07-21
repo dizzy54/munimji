@@ -62,33 +62,31 @@ def _set_split(request):
     payers = get_all_entity_values_as_string(entities, 'payer')
     payees = get_all_entity_values_as_string(entities, 'payee')
 
-    if amount_of_money and payers and payees:
-        print "payers = " + payers
-        print "payees = " + payees
-        context['amount_split'] = amount_of_money / len(get_all_entity_values(entities, 'payee'))
+    if payers:
         context['payer_string'] = payers
+    if payees:
         context['payee_string'] = payees
-    elif not payers:
+    if amount_of_money:
+        context['amount_of_money'] = amount_of_money
+
+    if not context.get('payer_string'):
         context['missing_payer'] = True
         if context.get('missing_payee'):
             del context['missing_payee']
         if context.get('missing_amount_of_money'):
             del context['missing_amount_of_money']
-    elif not amount_of_money:
+    elif not context.get('amount_of_money'):
         context['missing_amount_of_money'] = True
         if context.get('missing_payer'):
             del context['missing_payer']
         if context.get('missing_payee'):
             del context['missing_payee']
-    elif not payees:
+    elif not context.get('payee_string'):
         context['missing_payee'] = True
         if context.get('missing_payer'):
             del context['missing_payer']
         if context.get('missing_amount_of_money'):
             del context['missing_amount_of_money']
-    else:
-        context['amount_of_money'] = '0'
-        context['amount_split'] = '0'
 
     return context
 
