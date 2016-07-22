@@ -12,7 +12,8 @@ from django.utils.decorators import method_decorator
 
 from witio.models import Session
 import fb
-import bot
+# import witbot
+from apiaibot import MyApiaiClient
 from django.conf import settings
 
 PAGE_ACCESS_TOKEN = settings.PAGE_ACCESS_TOKEN
@@ -65,7 +66,9 @@ class WitioView(generic.View):
                         context['_fbid_'] = sender
                         session.wit_context = context
                         session.save()
-                        wit_client = bot.get_wit_client()
+                        '''
+                        # for wit implementation
+                        wit_client = witbot.get_wit_client()
                         print "context = %s" % context
                         context = wit_client.run_actions(
                             session_id,
@@ -73,6 +76,10 @@ class WitioView(generic.View):
                             context,
                         )
                         session.wit_context = context
+                        '''
+                        # for apiai implementation
+                        bot = MyApiaiClient(session_id=session_id)
+                        bot.process_text_query(message)
                         session.save()
                 else:
                     # fb.send_message(sender, message)

@@ -27,6 +27,7 @@ SECRET_KEY = '170pk&#95pdz7@8c%hy$+69c1-7s&(pq)s0=@x7wtgk4n7il4x'
 PAGE_ACCESS_TOKEN = os.getenv('FB_PAGE_TOKEN', default='')
 VERIFY_TOKEN = os.getenv('FB_VERIFY_TOKEN', default='')
 WIT_ACCESS_TOKEN = os.getenv('WIT_TOKEN', default='')
+APIAI_ACCESS_TOKEN = os.getenv('APIAI_ACCESS_TOKEN', default='')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
