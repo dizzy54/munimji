@@ -4,6 +4,7 @@ from django.conf import settings
 import apiai
 
 import fb
+from witio.models import Session 
 
 CLIENT_ACCESS_TOKEN = settings.APIAI_ACCESS_TOKEN
 
@@ -14,7 +15,7 @@ class MyApiaiClient(apiai.ApiAI):
     def __init__(self, session_id=None):
         super(MyApiaiClient, self).__init__(
             client_access_token=CLIENT_ACCESS_TOKEN,
-            session_id=session_id
+            session_id=session_id,
         )
 
     def process_text_query(self, text):
@@ -36,7 +37,9 @@ class MyApiaiClient(apiai.ApiAI):
                 if action_func:
                     action_func(response)
 
-        fb.send_message(message)
+        session = Session.objects.get(session_id=self.session_id)
+        fbid = session.fbid
+        fb.send_message(fbid, message)
 
     def actions(self):
         """returns a dictionary of actions
