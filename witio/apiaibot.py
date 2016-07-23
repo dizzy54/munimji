@@ -18,17 +18,27 @@ class MyApiaiClient(apiai.ApiAI):
             session_id=session_id,
         )
 
-    def process_text_query(self, text, added_context=None):
+    def process_text_query(self, text, added_contexts=None, deleted_context_names=None):
         """processes any text query recieved from client
         - runs any required actions
         - sends response
         """
         request = self.text_request()
         request.query = text
-        if added_context:
-            contexts = request.contexts
-            contexts.append(added_context)
-            request.contexts = contexts
+
+        # context handling
+        contexts = request.contexts
+
+        if deleted_context_names:
+            for context in contexts:
+                if context['name'] in deleted_context_names:
+                    contexts.remove(contexts)
+
+        if added_contexts:
+            for added_context in added_contexts:
+                contexts.append(added_contexts)
+
+        request.contexts = contexts
 
         response = json.loads(request.getresponse().read())
         result = response['result']
@@ -65,14 +75,16 @@ class MyApiaiClient(apiai.ApiAI):
         payer_list = get_payer_list_from_string(payer_string)
         if payer_list:
             payer_display_names = payer_list[0]
-            added_context = {
+            added_contexts = [{
                 'name': 'payer_processed_code',
                 'lifespan': 5,
                 'parameters': {
                     'verified_payer_string': payer_display_names
                 }
-            }
-            self.process_text_query("payer verified", added_context=added_context)
+            }]
+            # deleted_contexts = []
+
+            self.process_text_query("payer verified", added_contexts=added_contexts)
 
 
 def get_payer_list_from_string(payer_string):
