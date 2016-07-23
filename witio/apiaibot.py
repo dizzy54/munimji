@@ -60,7 +60,7 @@ class MyApiaiClient(apiai.ApiAI):
 
     def _verify_payer(self, response):
         print "verify_payer action triggered"
-        payer_string = response['parameters']['payer']
+        payer_string = response['result']['parameters']['payer']
         payer_list = get_payer_list_from_string(payer_string)
         if payer_list:
             payer_display_names = payer_list[0]
