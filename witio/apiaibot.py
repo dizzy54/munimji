@@ -35,7 +35,7 @@ class MyApiaiClient(apiai.ApiAI):
         action = result.get('action')
         actionIncomplete = result.get('actionIncomplete', False)
         message = response['result']['fulfillment']['speech']
-        print "message - " + str(message)
+        print "message - " + str(message) + "type=" + str(type(message))
 
         if action is not None:
             if not actionIncomplete:
