@@ -24,7 +24,7 @@ def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS
                               }),
                               headers={'Content-type': 'application/json'})
         if r.status_code != requests.codes.ok:
-            print r.text
+            print "request not ok - " + str(r.text)
 
 
 def get_user_details(fbid, token=settings.PAGE_ACCESS_TOKEN):
