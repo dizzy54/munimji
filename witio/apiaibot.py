@@ -40,6 +40,7 @@ class MyApiaiClient(apiai.ApiAI):
 
         request.contexts = contexts
 
+        print "context = %s " % contexts
         response = json.loads(request.getresponse().read())
 
         print 'response' + str(response)
