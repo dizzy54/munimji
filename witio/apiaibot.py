@@ -5,6 +5,7 @@ import apiai
 
 import fb
 from witio.models import Session
+# from users.models import RegisteredUser
 
 CLIENT_ACCESS_TOKEN = settings.APIAI_ACCESS_TOKEN
 
@@ -56,13 +57,23 @@ class MyApiaiClient(apiai.ApiAI):
         message = response['result']['fulfillment']['speech']
         print "message - " + str(message) + "type=" + str(type(message))
 
-        if action is not None:
-            if not actionIncomplete:
-                action_func = self.actions().get(action)
-                if action_func:
-                    action_func(response)
-
         session = Session.objects.get(session_id=self.session_id)
+
+        if action is not None:
+            # check if authenticated with splitwise
+            user = session.user
+            splitwise_creds = user.get_splitwise_credentials()
+            if splitwise_creds:
+                # check if action is completed
+                if not actionIncomplete:
+                    action_func = self.actions().get(action)
+                    if action_func:
+                        action_func(response, splitwise_creds)
+            else:
+                auth_link = user.get_splitwise_auth_link()
+                message = '''to continue, please log into your splitwise account by clicking here
+                 - %s''' % auth_link
+
         fbid = session.fbid
         fb.send_message(fbid, message)
 
@@ -74,11 +85,11 @@ class MyApiaiClient(apiai.ApiAI):
             'verify_payer': self._verify_payer,
         }
 
-    def _split(self, response):
+    def _split(self, response, splitwise_creds):
         print "split action triggered"
         pass
 
-    def _verify_payer(self, response):
+    def _verify_payer(self, response, splitwise_creds):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
         payer_list = get_payer_list_from_string(payer_string)

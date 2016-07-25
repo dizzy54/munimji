@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
+from witio import splitwise
+
 
 class RegisteredUser(models.Model):
 
@@ -23,6 +25,14 @@ class RegisteredUser(models.Model):
         through_fields=('from_user', 'to_user'),
     )
 
+    resource_owner_key = models.CharField(max_length=60, null=True)
+    resource_owner_secret = models.CharField(max_length=60, null=True)
+    oauth_verifier = models.CharField(max_length=30, null=True)
+
+    # permanent access keys
+    splitwise_key = models.CharField(max_length=60, null=True)
+    splitwise_secret = models.CharField(max_length=60, null=True)
+
     def add_friend(self, friend_id):
         """add existing user as friend
         returns True if new friend added
@@ -37,6 +47,20 @@ class RegisteredUser(models.Model):
                 return True
             else:
                 return False
+
+    def get_splitwise_auth_link(self):
+        oauth, resource_owner_key, resource_owner_secret = splitwise.get_request_token()
+        self.resource_owner_key = resource_owner_key
+        self.resource_owner_secret = resource_owner_secret
+        self.save()
+        base_authorization_url = 'https://secure.splitwise.com/authorize'
+        return oauth.authorization_url(base_authorization_url)
+
+    def get_splitwise_credentials(self):
+        if self.splitwise_key and self.splitwise_secret:
+            return self.splitwise_key, self.splitwise_secret
+        else:
+            return None
 
 
 class Relationship(models.Model):

@@ -29,6 +29,10 @@ VERIFY_TOKEN = os.getenv('FB_VERIFY_TOKEN', default='')
 WIT_ACCESS_TOKEN = os.getenv('WIT_TOKEN', default='')
 APIAI_ACCESS_TOKEN = os.getenv('APIAI_ACCESS_TOKEN', default='')
 
+# splitwise keys
+SPLITWISE_CLIENT_KEY = os.getenv('SPLITWISE_CLIENT_KEY', default='')
+SPLITWISE_CLIENT_SECRET = os.getenv('SPLITWISE_CLIENT_SECRET', default='')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

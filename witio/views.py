@@ -3,21 +3,56 @@ import json
 # from pprint import pprint
 # import settings
 from datetime import datetime
+import traceback
 
 from django.views import generic
 from django.http.response import HttpResponse
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.shortcuts import redirect
+
+from requests_oauthlib import OAuth1Session
 
 from witio.models import Session
 import fb
 # import witbot
 from apiaibot import MyApiaiClient
 from django.conf import settings
+from users.models import RegisteredUser
 
 PAGE_ACCESS_TOKEN = settings.PAGE_ACCESS_TOKEN
 VERIFY_TOKEN = settings.VERIFY_TOKEN
+
+
+class SplitwiseOauthRedirect(generic.View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return generic.View.dispatch(self, request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            oauth_token = request.GET['oauth_token']
+            oauth_verifier = request.GET['oauth_verifier']
+            # print oauth_token
+            # print oauth_verifier
+            user = RegisteredUser.objects.get(resource_owner_key=oauth_token)
+            user.oauth_verifier = oauth_verifier
+            oauth = OAuth1Session(
+                settings.SPLITWISE_CLIENT_KEY,
+                client_secret=settings.SPLITWISE_CLIENT_SECRET,
+                resource_owner_key=user.resource_owner_key,
+                resource_owner_secret=user.resource_owner_secret,
+                verifier=oauth_verifier
+            )
+            access_token_url = 'https://secure.splitwise.com/api/v3.0/get_access_token'
+            oauth_tokens = oauth.fetch_access_token(access_token_url)
+            user.splitwise_key = oauth_tokens.get('oauth_token')
+            user.splitwise_secret = oauth_tokens.get('oauth_token_secret')
+            user.save()
+        except:
+            traceback.print_exc()
+        return redirect('https://www.messenger.com/t/munimbot')
 
 
 class WitioView(generic.View):
