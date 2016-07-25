@@ -82,17 +82,20 @@ class MyApiaiClient(apiai.ApiAI):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
         payer_list = get_payer_list_from_string(payer_string)
+
         if payer_list:
             payer_display_names = payer_list[0]
+            '''
             added_contexts = [{
                 'name': 'payer_processed_code',
-                'lifespan': 5,
+                'lifespan': 1,
                 'parameters': {
                     'verified_payer_string': payer_display_names
                 }
             }]
             # deleted_contexts = []
-
+            '''
+            added_contexts = None
             self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
 
 
