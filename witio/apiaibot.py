@@ -32,11 +32,11 @@ class MyApiaiClient(apiai.ApiAI):
         if deleted_context_names:
             for context in contexts:
                 if context['name'] in deleted_context_names:
-                    contexts.remove(contexts)
+                    contexts.remove(context)
 
         if added_contexts:
             for added_context in added_contexts:
-                contexts.append(added_contexts)
+                contexts.append(added_context)
 
         request.contexts = contexts
 
