@@ -45,7 +45,12 @@ class MyApiaiClient(apiai.ApiAI):
 
         print 'response' + str(response)
 
-        result = response['result']
+        try:
+            result = response['result']
+        except KeyError:
+            # error response
+            print response
+            return
         action = result.get('action')
         actionIncomplete = result.get('actionIncomplete', False)
         message = response['result']['fulfillment']['speech']
