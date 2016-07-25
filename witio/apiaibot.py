@@ -84,7 +84,7 @@ class MyApiaiClient(apiai.ApiAI):
             }]
             # deleted_contexts = []
 
-            self.process_text_query("payer verified", added_contexts=added_contexts)
+            self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
 
 
 def get_payer_list_from_string(payer_string):
