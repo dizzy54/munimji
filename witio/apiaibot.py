@@ -41,6 +41,9 @@ class MyApiaiClient(apiai.ApiAI):
         request.contexts = contexts
 
         response = json.loads(request.getresponse().read())
+
+        print 'response' + str(response)
+
         result = response['result']
         action = result.get('action')
         actionIncomplete = result.get('actionIncomplete', False)
