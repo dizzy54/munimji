@@ -68,7 +68,7 @@ class MyApiaiClient(apiai.ApiAI):
                 # to test
                 access_token, access_token_secret = splitwise_creds
                 expenses = splitwise.get_expenses(access_token, access_token_secret)
-                print json.loads(expenses)
+                print expenses
                 # check if action is completed
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
