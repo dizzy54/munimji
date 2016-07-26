@@ -97,7 +97,7 @@ class MyApiaiClient(apiai.ApiAI):
 
     def _show_summary(self, response, splitwise_creds):
         friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
-        friend_list = friends.get['friends']
+        friend_list = friends.get('friends')
         summary_list = []
         for friend in friend_list:
             '''
