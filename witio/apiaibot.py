@@ -108,10 +108,12 @@ class MyApiaiClient(apiai.ApiAI):
             }
             '''
             balance = friend['balance']
-            if balance > 0:
-                friend_str = '%s %s - owes you %s' % (friend['first_name'], friend['last_name'], balance)
+            amount = balance['amount']
+            currency = balance['currency']
+            if amount > 0:
+                friend_str = '%s %s - owes you %s%s' % (friend['first_name'], friend['last_name'], currency, amount)
             else:
-                friend_str = '%s %s - You owe %s' % (friend['first_name'], friend['last_name'], balance)
+                friend_str = '%s %s - You owe %s%s' % (friend['first_name'], friend['last_name'], currency, amount)
             summary_list.append(friend_str)
         message = '\n'.join(summary_list)
         return message

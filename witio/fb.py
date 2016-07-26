@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 
 fb_text_length_limit = 320
+max_supported_length = fb_text_length_limit * 5
 
 
 def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS_TOKEN):
@@ -44,6 +45,8 @@ def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS
 def send_long_message(recipient, text):
     """breaks long message into chunks and sends individually
     """
+    if len(text) > max_supported_length:
+        return
     length = fb_text_length_limit
     text_generator = (text[0 + i:length + i] for i in range(0, len(text), length))
     for chunk in text_generator:
