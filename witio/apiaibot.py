@@ -112,7 +112,7 @@ class MyApiaiClient(apiai.ApiAI):
                 friend_str = '%s %s - owes you %s' % (friend['first_name'], friend['last_name'], balance)
             else:
                 friend_str = '%s %s - You owe %s' % (friend['first_name'], friend['last_name'], balance)
-            summary_list.append[friend_str]
+            summary_list.append(friend_str)
         message = '\n'.join(summary_list)
         return message
 
