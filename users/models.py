@@ -22,7 +22,7 @@ class RegisteredUser(models.Model):
     splitwise_id = models.CharField(max_length=20, null=True)
     splitwise_first_name = models.CharField(max_length=30, null=True)
     splitwise_last_name = models.CharField(max_length=30, null=True)
-    splitwise_email = models.CharField(max_length=60, null=true)
+    splitwise_email = models.CharField(max_length=60, null=True)
 
     friends = models.ManyToManyField(
         'self',
