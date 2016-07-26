@@ -96,9 +96,25 @@ class MyApiaiClient(apiai.ApiAI):
         return None
 
     def _show_summary(self, response, splitwise_creds):
-        user_details = splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1])
-        monthly_summary = user_details.get('notifications').get('monthly_summary')
-        return str(monthly_summary)
+        friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
+        friend_list = friends.get['friends']
+        summary_list = []
+        for friend in friend_list:
+            '''
+            friend_dict = {
+                'first_name': friend['first_name'],
+                'last_name': friend['last_name'],
+                'balance': friend['balance']
+            }
+            '''
+            balance = friend['balance']
+            if balance > 0:
+                friend_str = '%s %s - owes you %s' % (friend['first_name'], friend['last_name'], balance)
+            else:
+                friend_str = '%s %s - You owe %s' % (friend['first_name'], friend['last_name'], balance)
+            summary_list.append[friend_str]
+        message = '\n'.join(summary_list)
+        return message
 
     def _verify_payer(self, response, splitwise_creds):
         print "verify_payer action triggered"

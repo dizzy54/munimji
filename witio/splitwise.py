@@ -42,3 +42,9 @@ def get_expenses(access_token, access_token_secret):
     protected_uri = 'https://secure.splitwise.com/api/v3.0/get_expenses'
     response = get_splitwise_response(access_token, access_token_secret, protected_uri)
     return response.json()
+
+
+def get_friends(access_token, access_token_secret):
+    protected_uri = 'https://secure.splitwise.com/api/v3.0/get_friends'
+    response = get_splitwise_response(access_token, access_token_secret, protected_uri)
+    return response.json()
