@@ -33,7 +33,7 @@ def get_splitwise_response(access_token, access_token_secret, protected_uri, *ar
 def get_user_by_auth(access_token, access_token_secret):
     """ returns splitwise response json for user with input ouath access token
     """
-    protected_uri = ' https://secure.splitwise.com/api/v3.0/get_current_user'
+    protected_uri = 'https://secure.splitwise.com/api/v3.0/get_current_user'
     response = get_splitwise_response(access_token, access_token_secret, protected_uri)
     return response.json()
 
