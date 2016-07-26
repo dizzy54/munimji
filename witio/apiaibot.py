@@ -66,7 +66,8 @@ class MyApiaiClient(apiai.ApiAI):
             splitwise_creds = user.get_splitwise_credentials()
             if splitwise_creds:
                 # to test
-                expenses = splitwise.get_expenses(splitwise_creds)
+                access_token, access_token_secret = splitwise_creds
+                expenses = splitwise.get_expenses(access_token, access_token_secret)
                 print expenses
                 # check if action is completed
                 if not actionIncomplete:
