@@ -18,6 +18,12 @@ class RegisteredUser(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     fbid = models.CharField(max_length=20)
+
+    splitwise_id = models.CharField(max_length=20, null=True)
+    splitwise_first_name = models.CharField(max_length=30, null=True)
+    splitwise_last_name = models.CharField(max_length=30, null=True)
+    splitwise_email = models.CharField(max_length=60, null=true)
+
     friends = models.ManyToManyField(
         'self',
         symmetrical=False,
@@ -58,6 +64,13 @@ class RegisteredUser(models.Model):
 
     def get_splitwise_credentials(self):
         if self.splitwise_key and self.splitwise_secret:
+            if not self.splitwise_id:
+                user_details = splitwise.get_user_by_auth(self.splitwise_key, self.splitwise_secret)
+                self.splitwise_id = user_details.get('id')
+                self.splitwise_first_name = user_details.get('first_name')
+                self.splitwise_last_name = user_details.get('last_name')
+                self.splitwise_email = user_details.get('email')
+                self.save()
             return self.splitwise_key, self.splitwise_secret
         else:
             return None

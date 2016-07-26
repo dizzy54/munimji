@@ -59,27 +59,27 @@ class MyApiaiClient(apiai.ApiAI):
         print "message - " + str(message) + "type=" + str(type(message))
 
         session = Session.objects.get(session_id=self.session_id)
+        fbid = session.fbid
 
-        if action is not None:
+        if action:
             # check if authenticated with splitwise
             user = session.user
             splitwise_creds = user.get_splitwise_credentials()
             if splitwise_creds:
                 # to test
                 access_token, access_token_secret = splitwise_creds
-                expenses = splitwise.get_expenses(access_token, access_token_secret)
-                print expenses
                 # check if action is completed
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
                     if action_func:
-                        action_func(response, splitwise_creds)
+                        action_message = action_func(response, splitwise_creds)
+                        fb.send_message(fbid, action_message)
+
             else:
                 auth_link = user.get_splitwise_auth_link()
                 message = '''to continue, please log into your splitwise account by clicking here
                  - %s''' % auth_link
 
-        fbid = session.fbid
         fb.send_message(fbid, message)
 
     def actions(self):
@@ -88,11 +88,17 @@ class MyApiaiClient(apiai.ApiAI):
         return {
             'split': self._split,
             'verify_payer': self._verify_payer,
+            'show_summary': self._show_summary,
         }
 
     def _split(self, response, splitwise_creds):
         print "split action triggered"
-        pass
+        return None
+
+    def _show_summary(self, response, splitwise_creds):
+        user_details = splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1])
+        monthly_summary = user_details.get('notifications').get('monthly_summary')
+        return str(monthly_summary)
 
     def _verify_payer(self, response, splitwise_creds):
         print "verify_payer action triggered"
@@ -113,6 +119,7 @@ class MyApiaiClient(apiai.ApiAI):
             '''
             added_contexts = None
             self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
+        return None
 
 
 def get_payer_list_from_string(payer_string):
