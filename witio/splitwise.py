@@ -27,4 +27,5 @@ def get_expenses(access_token, access_token_secret):
         resource_owner_key=access_token,
         resource_owner_secret=access_token_secret
     )
-    return oauth.get(protected_uri)
+    response = oauth.get(protected_uri)
+    return response.body
