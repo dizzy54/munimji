@@ -107,7 +107,7 @@ class MyApiaiClient(apiai.ApiAI):
                 'balance': friend['balance']
             }
             '''
-            balance = friend['balance']
+            balance = friend['balance'][0]
             amount = balance['amount']
             currency = balance['currency']
             if amount[0] == '-':
