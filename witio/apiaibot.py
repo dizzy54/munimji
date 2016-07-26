@@ -73,7 +73,7 @@ class MyApiaiClient(apiai.ApiAI):
                     action_func = self.actions().get(action)
                     if action_func:
                         action_message = action_func(response, splitwise_creds)
-                        fb.send_message(fbid, action_message)
+                        fb.send_long_message(fbid, action_message)
 
             else:
                 auth_link = user.get_splitwise_auth_link()

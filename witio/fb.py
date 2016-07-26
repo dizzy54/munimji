@@ -2,6 +2,8 @@ import requests
 import json
 from django.conf import settings
 
+fb_text_length_limit = 320
+
 
 def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS_TOKEN):
         """Send the message text to recipient with id recipient.
@@ -37,6 +39,15 @@ def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS
                 print "request not ok - " + str(r.text)
         else:
             print "empty message"
+
+
+def send_long_message(recipient, text):
+    """breaks long message into chunks and sends individually
+    """
+    length = fb_text_length_limit
+    text_generator = (text[0 + i:length + i] for i in range(0, len(text), length))
+    for chunk in text_generator:
+        send_message(recipient, chunk)
 
 
 def get_user_details(fbid, token=settings.PAGE_ACCESS_TOKEN):
