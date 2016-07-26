@@ -109,7 +109,7 @@ class MyApiaiClient(apiai.ApiAI):
             '''
             balance = friend['balance'][0]
             amount = balance['amount']
-            currency = balance['currency']
+            currency = balance['currency_code']
             if amount[0] == '-':
                 friend_str = '%s %s - owes you %s%s' % (friend['first_name'], friend['last_name'], currency, amount)
             else:
