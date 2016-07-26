@@ -4,6 +4,7 @@ from django.conf import settings
 import apiai
 
 import fb
+import splitwise
 from witio.models import Session
 # from users.models import RegisteredUser
 
@@ -64,6 +65,9 @@ class MyApiaiClient(apiai.ApiAI):
             user = session.user
             splitwise_creds = user.get_splitwise_credentials()
             if splitwise_creds:
+                # to test
+                expenses = splitwise.get_expenses(splitwise_creds)
+                print expenses
                 # check if action is completed
                 if not actionIncomplete:
                     action_func = self.actions().get(action)

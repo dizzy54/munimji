@@ -17,3 +17,14 @@ def get_request_token():
     resource_owner_secret = fetch_response.get('oauth_token_secret')
 
     return oauth, resource_owner_key, resource_owner_secret
+
+
+def get_expenses(access_token, access_token_secret):
+    protected_uri = 'https://secure.splitwise.com/api/v3.0/get_expenses'
+    oauth = OAuth1Session(
+        client_key,
+        client_secret=client_secret,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+    return oauth.get(protected_uri)
