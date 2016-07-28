@@ -112,12 +112,16 @@ class MyApiaiClient(apiai.ApiAI):
             currency = balance['currency_code']
 
             first_name = friend.get('first_name', '')
+            if first_name == 'None':
+                first_name = ''
             last_name = friend.get('last_name', '')
+            if last_name == '':
+                last_name = ''
 
             if amount[0] != '-':
-                friend_str = '%s %s - owes you %s%s' % (first_name, last_name, currency, amount)
+                friend_str = '%s %s - Owes you %s %s' % (first_name, last_name, currency, amount)
             else:
-                friend_str = '%s %s - You owe %s%s' % (first_name, last_name, currency, amount)
+                friend_str = '%s %s - You owe %s %s' % (first_name, last_name, currency, amount[1:])
             summary_list.append(friend_str)
         message = '\n'.join(summary_list)
         return message

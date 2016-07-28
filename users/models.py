@@ -5,6 +5,8 @@ from django.db import models
 
 from witio import splitwise
 
+import re
+
 
 class RegisteredUser(models.Model):
 
@@ -54,6 +56,11 @@ class RegisteredUser(models.Model):
             else:
                 return False
 
+    def get_splitwise_id_list_from_names_string(self, names_string):
+        """returns list of splitwise ids from names string. Also returns unidentified names
+        """
+        first_level_entities = re.split(',|;|and|&', names_string)
+        
     def get_splitwise_auth_link(self):
         oauth, resource_owner_key, resource_owner_secret = splitwise.get_request_token()
         self.resource_owner_key = resource_owner_key
