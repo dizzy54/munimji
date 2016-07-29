@@ -144,6 +144,7 @@ class MyApiaiClient(apiai.ApiAI):
                 }
             }]
             message = 'split %s between %s' % (payee_string, amount_paid_string)
+            print 'message = ' + message
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
             return response_string
 
