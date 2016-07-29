@@ -124,10 +124,14 @@ class MyApiaiClient(apiai.ApiAI):
         response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
         if not response_string:
             # names matched perfectly
-            payer_list = [friend_list[payer[1]] for payer in payer_names]
-            payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
-            if payer_names[3]:
-                payer_string = 'You, ' + payer_string
+            if payer_names[0]:
+                # names exist in match_list other than self
+                payer_list = [friend_list[payer[1]] for payer in payer_names]
+                payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
+                if payer_names[3]:
+                    payer_string = 'You, ' + payer_string
+            else:
+                payer_string = 'You'
         else:
             payer_string = None
             # to edit context
@@ -140,7 +144,7 @@ class MyApiaiClient(apiai.ApiAI):
             }]
             message = 'split %s between %s' % (payee_string, amount_paid_string)
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
-            return None
+            return response_string
 
         # get payees
 
