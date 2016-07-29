@@ -108,9 +108,11 @@ class MyApiaiClient(apiai.ApiAI):
             first_name = friend.get('first_name', '')
             if first_name == 'None':
                 first_name = ''
+            print 'first name = ' + str(first_name)
             last_name = friend.get('last_name', '')
             if last_name == 'None':
                 last_name = ''
+            print 'last name = ' + str(last_name)
             full_name = first_name + ' ' + last_name
             friend_name_list.append(full_name)
 
