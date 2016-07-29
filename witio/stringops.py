@@ -6,6 +6,7 @@ def get_response_string_from_matched_names(name_response, payee=True):
     """ returns None if all names matched
     else returns a string to be sent to user explaining mismatches
     """
+    print "entered response string function"
     matched_index_list, doubt_list, unmatched_entities_list, self_included = name_response
     if not doubt_list and not unmatched_entities_list:
         print "all matched"
@@ -27,6 +28,7 @@ def get_response_string_from_matched_names(name_response, payee=True):
             doubt_names_string,
             entity
         )
+        print "only doubt"
         return return_string
 
     elif not doubt_list and unmatched_entities_list:
@@ -40,6 +42,7 @@ def get_response_string_from_matched_names(name_response, payee=True):
             entity
         )
         return_string = unmatched_return_string
+        print "only unmatched"
         return return_string
 
     elif doubt_list and unmatched_entities_list:
@@ -65,6 +68,7 @@ def get_response_string_from_matched_names(name_response, payee=True):
             entity
         )
         return_string = doubt_return_string + unmatched_return_string
+        print "doubt and unmatched"
         return return_string
 
     else:
