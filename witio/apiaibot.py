@@ -121,6 +121,7 @@ class MyApiaiClient(apiai.ApiAI):
         amount_paid_string = response['result']['parameters']['amount_paid']
         # get payers
         payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
+        print payer_names
         response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
         if not response_string:
             # names matched perfectly
@@ -129,9 +130,9 @@ class MyApiaiClient(apiai.ApiAI):
                 payer_list = [friend_list[payer[1]] for payer in payer_names]
                 payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
                 if payer_names[3]:
-                    payer_string = 'You, ' + payer_string
+                    payer_string = 'you, ' + payer_string
             else:
-                payer_string = 'You'
+                payer_string = 'you'
         else:
             payer_string = None
             # to edit context

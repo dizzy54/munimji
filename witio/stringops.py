@@ -66,6 +66,8 @@ def get_response_string_from_matched_names(name_response, payee=True):
         return_string = doubt_return_string + unmatched_return_string
         return return_string
 
+    else:
+        print 'something is wrong. Hope you are checking your logs'
 
 def match_from_name_list(entity, full_name_list, self_included=False):
     """ returns list of index of matching names, doubt cases and unmatched entities list
@@ -105,7 +107,8 @@ def match_from_name_list(entity, full_name_list, self_included=False):
 
     if not matched_list:
         unmatched_entities_list = unmatched_names_updated
-        return matched_index_list, doubt_list, unmatched_names_updated, self_included
+        print unmatched_entities_list
+        return matched_index_list, doubt_list, unmatched_entities_list, self_included
     # check if entire string is a name
     if matched_list[1:] == matched_list[:1]:
         # print "single name"
