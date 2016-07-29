@@ -121,7 +121,7 @@ class MyApiaiClient(apiai.ApiAI):
         amount_paid_string = response['result']['parameters']['amount_paid']
         # get payers
         payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
-        print payer_names
+        print "payer names = " + str(payer_names)
         response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
         print "response string = " + str(response_string)
         if not response_string:
