@@ -169,17 +169,15 @@ class MyApiaiClient(apiai.ApiAI):
 
         if payer_list:
             payer_display_names = payer_list[0]
-            '''
             added_contexts = [{
-                'name': 'payer_processed_code',
-                'lifespan': 1,
+                'name': 'split_params',
+                'lifespan': 5,
                 'parameters': {
-                    'verified_payer_string': payer_display_names
+                    # 'verified_payer_string': payer_display_names
                 }
             }]
             # deleted_contexts = []
-            '''
-            added_contexts = None
+            # added_contexts = None
             self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
         return None
 
