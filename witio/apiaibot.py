@@ -5,6 +5,7 @@ import apiai
 
 import fb
 import splitwise
+import stringops
 from witio.models import Session
 # from users.models import RegisteredUser
 
@@ -93,6 +94,41 @@ class MyApiaiClient(apiai.ApiAI):
 
     def _split(self, response, splitwise_creds):
         print "split action triggered"
+        # payer_missing = False
+        # payee_missing = False
+        # amount_missing = False
+        # get friend list
+        '''
+        friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
+        friend_list = friends.get('friends')
+        friend_name_list = []
+        for friend in friend_list:
+            first_name = friend.get('first_name', '')
+            if first_name == 'None':
+                first_name = ''
+            last_name = friend.get('last_name', '')
+            if last_name == '':
+                last_name = ''
+            full_name = first_name + ' ' + last_name
+            friend_name_list.append(full_name)
+
+        # get payers
+        payer_string = response['result']['parameters']['payer']
+        payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
+        response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
+        if not response_string:
+            # names matched perfectly
+            payer_list = [friend_list[payer[1]] for payer in payer_names]
+            payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
+        else:
+            payer_string = None
+            # to edit context
+            context = response()
+
+
+
+        # get payees
+        '''
         return None
 
     def _show_summary(self, response, splitwise_creds):

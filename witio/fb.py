@@ -45,6 +45,8 @@ def send_message(recipient, text, quick_replies=None, token=settings.PAGE_ACCESS
 def send_long_message(recipient, text):
     """breaks long message into chunks and sends individually
     """
+    if not text:
+        return
     if len(text) > max_supported_length:
         return
     length = fb_text_length_limit
