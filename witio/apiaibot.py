@@ -117,8 +117,8 @@ class MyApiaiClient(apiai.ApiAI):
             friend_name_list.append(full_name)
 
         payer_string = response['result']['parameters']['payer']
-        payee_string = response['result']['parameters']['payee']
-        amount_string = response['result']['parameters']['amount']
+        payee_string = response['result']['parameters']['payees']
+        amount_paid_string = response['result']['parameters']['amount_paid']
         # get payers
         payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
         response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
@@ -136,7 +136,7 @@ class MyApiaiClient(apiai.ApiAI):
                     # 'verified_payer_string': payer_display_names
                 }
             }]
-            message = 'split %s between %s' % (payee_string, amount_string)
+            message = 'split %s between %s' % (payee_string, amount_paid_string)
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
             return None
 
