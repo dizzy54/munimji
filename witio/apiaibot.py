@@ -21,21 +21,24 @@ class MyApiaiClient(apiai.ApiAI):
             session_id=session_id,
         )
 
-    def process_text_query(self, text, added_contexts=None, deleted_context_names=None):
+    def process_text_query(self, text, added_contexts=None, reset_contexts=False):
         """processes any text query recieved from client
         - runs any required actions
         - sends response
         """
         request = self.text_request()
         request.query = text
+        request.resetContexts = reset_contexts
 
         # context handling
         contexts = request.contexts
 
+        '''
         if deleted_context_names:
             for context in contexts:
                 if context['name'] in deleted_context_names:
                     contexts.remove(context)
+        '''
 
         if added_contexts:
             for added_context in added_contexts:
@@ -98,7 +101,6 @@ class MyApiaiClient(apiai.ApiAI):
         # payee_missing = False
         # amount_missing = False
         # get friend list
-        '''
         friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
         friend_list = friends.get('friends')
         friend_name_list = []
@@ -112,8 +114,10 @@ class MyApiaiClient(apiai.ApiAI):
             full_name = first_name + ' ' + last_name
             friend_name_list.append(full_name)
 
-        # get payers
         payer_string = response['result']['parameters']['payer']
+        payee_string = response['result']['parameters']['payee']
+        amount_string = response['result']['parameters']['amount']
+        # get payers
         payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
         response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
         if not response_string:
@@ -123,13 +127,25 @@ class MyApiaiClient(apiai.ApiAI):
         else:
             payer_string = None
             # to edit context
-            context = response()
-
-
+            added_contexts = [{
+                'name': 'split_params',
+                'lifespan': 1,
+                'parameters': {
+                    # 'verified_payer_string': payer_display_names
+                }
+            }]
+            message = 'split %s between %s' % (payee_string, amount_string)
+            self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
+            return None
 
         # get payees
-        '''
-        return None
+
+        # get amount
+
+        message = 'Adding transaction of amount %s - paid by %s, between %s, split equally' % (
+            amount_string, payer_string, payee_string
+        )
+        return message
 
     def _show_summary(self, response, splitwise_creds):
         friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
