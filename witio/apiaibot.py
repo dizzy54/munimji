@@ -151,7 +151,7 @@ class MyApiaiClient(apiai.ApiAI):
         # get amount
 
         message = 'Adding transaction of amount %s - paid by %s, between %s, split equally' % (
-            amount_string, payer_string, payee_string
+            amount_paid_string, payer_string, payee_string
         )
         return message
 
