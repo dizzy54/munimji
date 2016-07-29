@@ -8,13 +8,14 @@ def get_response_string_from_matched_names(name_response, payee=True):
     """
     print "entered response string function"
     matched_index_list, doubt_list, unmatched_entities_list, self_included = name_response
-    if not doubt_list and not unmatched_entities_list:
-        print "all matched"
-        return None
-
+    
     entity = 'payee(s)'
     if not payee:
         entity = 'payer(s)'
+
+    if not doubt_list and not unmatched_entities_list:
+        print "all matched"
+        return None
 
     elif doubt_list and not unmatched_entities_list:
         doubt_names = []
