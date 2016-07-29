@@ -100,16 +100,19 @@ def match_from_name_list(entity, full_name_list, self_included=False):
                 # print matched_list
             i += 1
 
-    print unmatched_names_updated
-    print matched_list
+    # print unmatched_names_updated
+    # print matched_list
 
+    if not matched_list:
+        unmatched_entities_list = unmatched_names_updated
+        return matched_index_list, doubt_list, unmatched_names_updated, self_included
     # check if entire string is a name
     if matched_list[1:] == matched_list[:1]:
-        print "single name"
+        # print "single name"
         full_names = matched_list[0]
         if full_names:
             if len(full_names) == 1:
-                print "1 word name (single) %s added" % str(full_names[0])
+                # print "1 word name (single) %s added" % str(full_names[0])
                 matched_index_list.append(full_names[0])
             else:
                 doubt_list.append(full_names)

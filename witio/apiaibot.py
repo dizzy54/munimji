@@ -126,6 +126,8 @@ class MyApiaiClient(apiai.ApiAI):
             # names matched perfectly
             payer_list = [friend_list[payer[1]] for payer in payer_names]
             payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
+            if payer_names[3]:
+                payer_string = 'You, ' + payer_string
         else:
             payer_string = None
             # to edit context
