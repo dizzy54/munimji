@@ -137,6 +137,7 @@ class MyApiaiClient(apiai.ApiAI):
         else:
             payer_string = None
             # to edit context
+            '''
             added_contexts = [{
                 'name': 'split_params',
                 'lifespan': 1,
@@ -144,6 +145,8 @@ class MyApiaiClient(apiai.ApiAI):
                     # 'verified_payer_string': payer_display_names
                 }
             }]
+            '''
+            added_contexts = None
             message = 'split %s between %s' % (amount_paid_string, payee_string)
             print 'message = ' + message
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
@@ -196,6 +199,7 @@ class MyApiaiClient(apiai.ApiAI):
 
         if payer_list:
             payer_display_names = payer_list[0]
+            '''
             added_contexts = [{
                 'name': 'split_params',
                 'lifespan': 5,
@@ -203,8 +207,9 @@ class MyApiaiClient(apiai.ApiAI):
                     # 'verified_payer_string': payer_display_names
                 }
             }]
+            '''
             # deleted_contexts = []
-            # added_contexts = None
+            added_contexts = None
             self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
         return None
 
