@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.conf import settings
 import apiai
@@ -78,7 +79,8 @@ class MyApiaiClient(apiai.ApiAI):
                     if action_func:
                         action_message = action_func(response, splitwise_creds)
                         fb.send_long_message(fbid, action_message)
-
+                        # wait to cause delay between this and the next message
+                        time.sleep(2)
             else:
                 auth_link = user.get_splitwise_auth_link()
                 message = '''to continue, please log into your splitwise account by clicking here
