@@ -144,7 +144,7 @@ class MyApiaiClient(apiai.ApiAI):
                     # 'verified_payer_string': payer_display_names
                 }
             }]
-            message = 'split %s between %s' % (payee_string, amount_paid_string)
+            message = 'split %s between %s' % (amount_paid_string, payee_string)
             print 'message = ' + message
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
             return response_string
