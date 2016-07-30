@@ -77,10 +77,10 @@ class MyApiaiClient(apiai.ApiAI):
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
                     if action_func:
-                        action_message = action_func(response, splitwise_creds)
+                        action_message = action_func(response, fbid, splitwise_creds)
                         fb.send_long_message(fbid, action_message)
                         # wait to cause delay between this and the next message
-                        time.sleep(2)
+                        # time.sleep(2)
             else:
                 auth_link = user.get_splitwise_auth_link()
                 message = '''to continue, please log into your splitwise account by clicking here
@@ -97,7 +97,7 @@ class MyApiaiClient(apiai.ApiAI):
             'show_summary': self._show_summary,
         }
 
-    def _split(self, response, splitwise_creds):
+    def _split(self, response, fbid, splitwise_creds):
         print "split action triggered"
         # payer_missing = False
         # payee_missing = False
@@ -137,6 +137,7 @@ class MyApiaiClient(apiai.ApiAI):
             else:
                 payer_string = 'you'
         else:
+            fb.send_message(fbid, response_string)
             payer_string = None
             # to edit context
             '''
@@ -152,7 +153,7 @@ class MyApiaiClient(apiai.ApiAI):
             message = 'split %s between %s' % (amount_paid_string, payee_string)
             print 'message = ' + message
             self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
-            return response_string
+            return None
 
         # get payees
 
@@ -163,7 +164,7 @@ class MyApiaiClient(apiai.ApiAI):
         )
         return message
 
-    def _show_summary(self, response, splitwise_creds):
+    def _show_summary(self, response, fbid, splitwise_creds):
         friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
         friend_list = friends.get('friends')
         summary_list = []
@@ -194,7 +195,7 @@ class MyApiaiClient(apiai.ApiAI):
         message = '\n'.join(summary_list)
         return message
 
-    def _verify_payer(self, response, splitwise_creds):
+    def _verify_payer(self, response, fbid, splitwise_creds):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
         payer_list = get_payer_list_from_string(payer_string)
