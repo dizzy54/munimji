@@ -146,7 +146,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if payer_names[0]:
                     # names exist in match_list other than self
                     # payer_list = [friend_list[payer[1]] for payer in payer_names]
-                    payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
+                    payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names[0]])
                     if payer_names[3]:
                         payer_string = 'you, ' + payer_string
                 else:
@@ -178,7 +178,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if payee_names[0]:
                     # names exist in match_list other than self
                     # payee_list = [friend_list[payee[1]] for payee in payee_names]
-                    payee_string = ', '.join([friend_name_list[payee[1]] for payee in payee_names])
+                    payee_string = ', '.join([friend_name_list[payee[1]] for payee in payee_names[0]])
                     if payee_names[3]:
                         payee_string = 'you, ' + payee_string
                 else:
