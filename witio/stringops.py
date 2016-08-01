@@ -348,7 +348,7 @@ def intersect(lists):
     for l1 in lists:
         entry = []
         for l2 in l1:
-            entry = entry.append(tuple(l2))
+            entry.append(tuple(l2))
         entry = tuple(entry)
         list_of_tuples.append(entry)
     print 'list_of_tuples for intersection - ' + str(list_of_tuples)
