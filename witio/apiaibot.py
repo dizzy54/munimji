@@ -12,7 +12,7 @@ from witio.models import Session
 
 CLIENT_ACCESS_TOKEN = settings.APIAI_ACCESS_TOKEN
 
-APIAI_CODE_TAG = '#code!- '
+APIAI_CODE_TAG = '#code!-'
 
 class MyApiaiClient(apiai.ApiAI):
     """custom apiai client
@@ -162,7 +162,7 @@ class MyApiaiClient(apiai.ApiAI):
         else:
             payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
             print "payee names = " + str(payee_names)
-            response_string = stringops.get_response_string_from_matched_names(payee_names, payee=False)
+            response_string = stringops.get_response_string_from_matched_names(payee_names, payee=True)
             print "response string = " + str(response_string)
             if not response_string:
                 # names matched perfectly
