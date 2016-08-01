@@ -346,9 +346,10 @@ def intersect(lists):
     print 'lists for intersection - ' + str(lists)
     list_of_tuples = []
     for l1 in lists:
-        entry = ()
+        entry = []
         for l2 in l1:
-            entry = entry + tuple(l2)
+            entry = entry.append(tuple(l2))
+        entry = tuple(entry)
         list_of_tuples.append(entry)
     print 'list_of_tuples for intersection - ' + str(list_of_tuples)
     return_list = list(set.intersection(*map(set, list_of_tuples)))
