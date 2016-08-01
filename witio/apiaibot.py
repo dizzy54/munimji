@@ -130,7 +130,8 @@ class MyApiaiClient(apiai.ApiAI):
         payer_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer' else False
         payees_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer,payees' else False
 
-        friend_name_list = None
+        friend_list = user.get_splitwise_friend_list()
+        friend_name_list = user.get_names_from_friend_list(friend_list=friend_list)
         # get payers
         if payer_is_tagged:
             # payer_string = payer_string
@@ -146,7 +147,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if payer_names[0]:
                     # names exist in match_list other than self
                     # payer_list = [friend_list[payer[1]] for payer in payer_names]
-                    payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names[0]])
+                    payer_string = ', '.join([friend_list[payer[1]]['email'] for payer in payer_names[0]])
                     if payer_names[3]:
                         payer_string = 'you, ' + payer_string
                 else:
@@ -178,7 +179,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if payee_names[0]:
                     # names exist in match_list other than self
                     # payee_list = [friend_list[payee[1]] for payee in payee_names]
-                    payee_string = ', '.join([friend_name_list[payee[1]] for payee in payee_names[0]])
+                    payee_string = ', '.join([friend_list[payee[1]]['email'] for payee in payee_names[0]])
                     if payee_names[3]:
                         payee_string = 'you, ' + payee_string
                 else:
@@ -194,7 +195,7 @@ class MyApiaiClient(apiai.ApiAI):
 
         # get amount
 
-        message = 'Adding transaction of amount %s - paid by %s, between %s, split equally' % (
+        message = 'Adding transaction of amount %s - paid by %s, between %s, split equally. Is this correct?' % (
             amount_paid_string, payer_string, payee_string
         )
         return message
