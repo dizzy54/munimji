@@ -344,4 +344,13 @@ def _process_entries(entry_list, matched_index_list, doubt_list):
 
 def intersect(lists):
     print 'lists for intersection - ' + str(lists)
-    return list(set.intersection(*map(set, lists)))
+    list_of_tuples = []
+    for l1 in lists:
+        entry = ()
+        for l2 in l1:
+            entry = entry + tuple(l2)
+        list_of_tuples.append(entry)
+    print 'list_of_tuples for intersection - ' + str(list_of_tuples)
+    return_list = list(set.intersection(*map(set, list_of_tuples)))
+    print return_list
+    return return_list
