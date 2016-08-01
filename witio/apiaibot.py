@@ -232,22 +232,16 @@ class MyApiaiClient(apiai.ApiAI):
     def _verify_payer(self, response, fbid, user):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
+        '''
         payer_list = get_payer_list_from_string(payer_string)
 
         if payer_list:
             payer_display_names = payer_list[0]
-            '''
-            added_contexts = [{
-                'name': 'split_params',
-                'lifespan': 5,
-                'parameters': {
-                    # 'verified_payer_string': payer_display_names
-                }
-            }]
-            '''
-            # deleted_contexts = []
-            added_contexts = None
-            self.process_text_query(payer_display_names + " paid", added_contexts=added_contexts)
+        '''
+        # deleted_contexts = []
+        added_contexts = None
+        message = APIAI_CODE_TAG + 'split_start payers: ' + payer_string
+        self.process_text_query(message, added_contexts=added_contexts)
         return None
 
 
