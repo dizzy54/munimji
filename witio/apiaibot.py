@@ -124,8 +124,9 @@ class MyApiaiClient(apiai.ApiAI):
         amount_paid_string = response['result']['parameters']['amount_paid']
 
         # check if response is tagged by code
-        payer_is_tagged = False if not response['result']['parameters'].get('tag_payer') else True
-        payees_is_tagged = False if not response['result']['parameters'].get('tag_payees') else True
+        tag = response['result']['parameters'].get('tag')
+        payer_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer' else False
+        payees_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer,payees' else False
 
         # get payers
         if payer_is_tagged:
@@ -178,7 +179,7 @@ class MyApiaiClient(apiai.ApiAI):
                 fb.send_message(fbid, response_string)
                 payee_string = None
                 added_contexts = None
-                message = APIAI_CODE_TAG +'payer ' + 'payers = %s, amount = %s' % (payer_string, amount_paid_string)
+                message = APIAI_CODE_TAG + 'payer payers = %s, amount = %s' % (payer_string, amount_paid_string)
                 print 'message = ' + message
                 self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
                 return None
