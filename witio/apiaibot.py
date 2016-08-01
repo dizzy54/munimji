@@ -12,6 +12,7 @@ from witio.models import Session
 
 CLIENT_ACCESS_TOKEN = settings.APIAI_ACCESS_TOKEN
 
+APIAI_CODE_TAG = '#code!- '
 
 class MyApiaiClient(apiai.ApiAI):
     """custom apiai client
@@ -121,41 +122,66 @@ class MyApiaiClient(apiai.ApiAI):
         payer_string = response['result']['parameters']['payer']
         payee_string = response['result']['parameters']['payees']
         amount_paid_string = response['result']['parameters']['amount_paid']
+
+        # check if response is tagged by code
+        payer_is_tagged = False if not response['result']['parameters'].get('tag_payer') else True
+        payees_is_tagged = False if not response['result']['parameters'].get('tag_payees') else True
+
         # get payers
-        payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
-        print "payer names = " + str(payer_names)
-        response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
-        print "response string = " + str(response_string)
-        if not response_string:
-            # names matched perfectly
-            if payer_names[0]:
-                # names exist in match_list other than self
-                payer_list = [friend_list[payer[1]] for payer in payer_names]
-                payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
-                if payer_names[3]:
-                    payer_string = 'you, ' + payer_string
-            else:
-                payer_string = 'you'
+        if payer_is_tagged:
+            # payer_string = payer_string
+            pass
         else:
-            fb.send_message(fbid, response_string)
-            payer_string = None
-            # to edit context
-            '''
-            added_contexts = [{
-                'name': 'split_params',
-                'lifespan': 1,
-                'parameters': {
-                    # 'verified_payer_string': payer_display_names
-                }
-            }]
-            '''
-            added_contexts = None
-            message = 'split %s between %s' % (amount_paid_string, payee_string)
-            print 'message = ' + message
-            self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
-            return None
+            payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
+            print "payer names = " + str(payer_names)
+            response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
+            print "response string = " + str(response_string)
+            if not response_string:
+                # names matched perfectly
+                if payer_names[0]:
+                    # names exist in match_list other than self
+                    payer_list = [friend_list[payer[1]] for payer in payer_names]
+                    payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
+                    if payer_names[3]:
+                        payer_string = 'you, ' + payer_string
+                else:
+                    payer_string = 'you'
+            else:
+                fb.send_message(fbid, response_string)
+                payer_string = None
+                added_contexts = None
+                message = 'payees = %s, amount = %s' % (payee_string, amount_paid_string)
+                print 'message = ' + message
+                self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
+                return None
 
         # get payees
+        if payees_is_tagged:
+            # payee_string = payee_string
+            pass
+        else:
+            payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
+            print "payee names = " + str(payee_names)
+            response_string = stringops.get_response_string_from_matched_names(payee_names, payee=False)
+            print "response string = " + str(response_string)
+            if not response_string:
+                # names matched perfectly
+                if payee_names[0]:
+                    # names exist in match_list other than self
+                    payee_list = [friend_list[payee[1]] for payee in payee_names]
+                    payee_string = ', '.join([friend_name_list[payee[1]] for payee in payee_names])
+                    if payee_names[3]:
+                        payee_string = 'you, ' + payee_string
+                else:
+                    payee_string = 'you'
+            else:
+                fb.send_message(fbid, response_string)
+                payee_string = None
+                added_contexts = None
+                message = APIAI_CODE_TAG +'payer ' + 'payers = %s, amount = %s' % (payer_string, amount_paid_string)
+                print 'message = ' + message
+                self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
+                return None
 
         # get amount
 

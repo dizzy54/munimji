@@ -84,7 +84,7 @@ def match_from_name_list(entity, full_name_list, self_included=False):
     unmatched_entities_list = []
     doubt_list = []
 
-    self_pronoun_list = ['me', 'i', 'myself']
+    self_pronoun_list = ['me', 'i', 'myself', 'you']
 
     # remove consecutively same entities and self pronouns
     i = 0
