@@ -240,7 +240,7 @@ class MyApiaiClient(apiai.ApiAI):
         '''
         # deleted_contexts = []
         added_contexts = None
-        message = APIAI_CODE_TAG + 'split_start payers: ' + payer_string
+        message = 'payers: ' + payer_string
         self.process_text_query(message, added_contexts=added_contexts)
         return None
 
