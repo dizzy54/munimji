@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
+from itertools import groupby
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from witio import splitwise
+from witio import stringops
 
 import re
 
@@ -25,6 +28,7 @@ class RegisteredUser(models.Model):
     splitwise_first_name = models.CharField(max_length=30, null=True)
     splitwise_last_name = models.CharField(max_length=30, null=True)
     splitwise_email = models.CharField(max_length=60, null=True)
+    splitwise_friend_list = JSONField('list of splitwise friends')
 
     friends = models.ManyToManyField(
         'self',
@@ -56,11 +60,68 @@ class RegisteredUser(models.Model):
             else:
                 return False
 
-    def get_splitwise_id_list_from_names_string(self, names_string):
+    def get_splitwise_friend_list(self):
+        """returns friend list dict
+        """
+        splitwise_creds = self.get_splitwise_credentials()
+        if not splitwise_creds:
+            # Unauthenticated
+            return None
+
+        friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
+        friend_list = friends.get('friends')
+        self.splitwise_friend_list = friend_list
+        self.save()
+        return friend_list
+
+    def get_names_from_friend_list(self, friend_list=None):
+        if not friend_list:
+            friend_list = self.get_splitwise_friend_list()
+        friend_name_list = []
+        for friend in friend_list:
+            first_name = friend.get('first_name', '')
+            if first_name is None:
+                first_name = ''
+            # print 'first name = ' + str(first_name)
+            last_name = friend.get('last_name', '')
+            if last_name is None:
+                last_name = ''
+            # print 'last name = ' + str(last_name)
+            full_name = first_name + ' ' + last_name
+            friend_name_list.append(full_name)
+        return friend_name_list
+
+    def get_splitwise_matches_from_names_string(self, names_string, friend_name_list=None):
         """returns list of splitwise ids from names string. Also returns unidentified names
         """
         first_level_entities = re.split(',|;|and|&', names_string)
-        
+        if not friend_name_list:
+            friend_name_list = self.get_names_from_friend_list()
+        # master_list = []    # matched_index_list, doubt_list, unmatched_entities_list, self_included
+        matched_index_list = []
+        doubt_list = []
+        unmatched_entities_list = []
+        self_included = False
+        for entity in first_level_entities:
+            l1, l2, l3, b1 = stringops.match_from_name_list(entity, friend_name_list)
+            matched_index_list += l1
+            doubt_list += l2
+            unmatched_entities_list += l3
+            if b1:
+                self_included = True
+        matched_index_list, doubt_list = stringops._remove_doubt_entries_if_confirmed(matched_index_list, doubt_list)
+        unmatched_entities_list = [k for k, v in groupby(sorted(unmatched_entities_list))]  # to remove duplicates
+
+        return (matched_index_list, doubt_list, unmatched_entities_list, self_included), friend_name_list
+
+    '''
+    def get_string_response_from_splitwise_matches(self, match_response=None, friend_name_list=None):
+        """returns string response
+        """
+        if not friend_name_list:
+            friend_name_list = self.get_names_from_friend_list()
+    '''
+
     def get_splitwise_auth_link(self):
         oauth, resource_owner_key, resource_owner_secret = splitwise.get_request_token()
         self.resource_owner_key = resource_owner_key

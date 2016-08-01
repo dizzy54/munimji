@@ -78,7 +78,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
                     if action_func:
-                        action_message = action_func(response, fbid, splitwise_creds)
+                        action_message = action_func(response, fbid, user)
                         fb.send_long_message(fbid, action_message)
                         # wait to cause delay between this and the next message
                         # time.sleep(2)
@@ -98,12 +98,13 @@ class MyApiaiClient(apiai.ApiAI):
             'show_summary': self._show_summary,
         }
 
-    def _split(self, response, fbid, splitwise_creds):
+    def _split(self, response, fbid, user):
         print "split action triggered"
         # payer_missing = False
         # payee_missing = False
         # amount_missing = False
         # get friend list
+        '''
         friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
         friend_list = friends.get('friends')
         friend_name_list = []
@@ -118,6 +119,7 @@ class MyApiaiClient(apiai.ApiAI):
             # print 'last name = ' + str(last_name)
             full_name = first_name + ' ' + last_name
             friend_name_list.append(full_name)
+        '''
 
         payer_string = response['result']['parameters']['payer']
         payee_string = response['result']['parameters']['payees']
@@ -128,12 +130,14 @@ class MyApiaiClient(apiai.ApiAI):
         payer_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer' else False
         payees_is_tagged = True if tag and tag == APIAI_CODE_TAG + 'payer,payees' else False
 
+        friend_name_list = None
         # get payers
         if payer_is_tagged:
             # payer_string = payer_string
             pass
         else:
-            payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
+            # payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
+            payer_names, friend_name_list = user.get_splitwise_matches_from_name_string(payer_string)
             print "payer names = " + str(payer_names)
             response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
             print "response string = " + str(response_string)
@@ -141,7 +145,7 @@ class MyApiaiClient(apiai.ApiAI):
                 # names matched perfectly
                 if payer_names[0]:
                     # names exist in match_list other than self
-                    payer_list = [friend_list[payer[1]] for payer in payer_names]
+                    # payer_list = [friend_list[payer[1]] for payer in payer_names]
                     payer_string = ', '.join([friend_name_list[payer[1]] for payer in payer_names])
                     if payer_names[3]:
                         payer_string = 'you, ' + payer_string
@@ -151,7 +155,7 @@ class MyApiaiClient(apiai.ApiAI):
                 fb.send_message(fbid, response_string)
                 payer_string = None
                 added_contexts = None
-                message = 'payees = %s, amount = %s' % (payee_string, amount_paid_string)
+                message = 'payees: %s, amount: %s' % (payee_string, amount_paid_string)
                 print 'message = ' + message
                 self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
                 return None
@@ -161,7 +165,11 @@ class MyApiaiClient(apiai.ApiAI):
             # payee_string = payee_string
             pass
         else:
-            payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
+            # payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
+            payee_names = user.get_splitwise_matches_from_name_string(
+                payee_string,
+                friend_name_list=friend_name_list
+            )[0]
             print "payee names = " + str(payee_names)
             response_string = stringops.get_response_string_from_matched_names(payee_names, payee=True)
             print "response string = " + str(response_string)
@@ -169,7 +177,7 @@ class MyApiaiClient(apiai.ApiAI):
                 # names matched perfectly
                 if payee_names[0]:
                     # names exist in match_list other than self
-                    payee_list = [friend_list[payee[1]] for payee in payee_names]
+                    # payee_list = [friend_list[payee[1]] for payee in payee_names]
                     payee_string = ', '.join([friend_name_list[payee[1]] for payee in payee_names])
                     if payee_names[3]:
                         payee_string = 'you, ' + payee_string
@@ -179,7 +187,7 @@ class MyApiaiClient(apiai.ApiAI):
                 fb.send_message(fbid, response_string)
                 payee_string = None
                 added_contexts = None
-                message = APIAI_CODE_TAG + 'payer payers = %s, amount = %s' % (payer_string, amount_paid_string)
+                message = APIAI_CODE_TAG + 'payer payers: %s, amount: %s' % (payer_string, amount_paid_string)
                 print 'message = ' + message
                 self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
                 return None
