@@ -343,4 +343,5 @@ def _process_entries(entry_list, matched_index_list, doubt_list):
 
 
 def intersect(lists):
+    print 'lists for intersection - ' + str(lists)
     return list(set.intersection(*map(set, lists)))
