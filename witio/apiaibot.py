@@ -199,9 +199,8 @@ class MyApiaiClient(apiai.ApiAI):
         )
         return message
 
-    def _show_summary(self, response, fbid, splitwise_creds):
-        friends = splitwise.get_friends(splitwise_creds[0], splitwise_creds[1])
-        friend_list = friends.get('friends')
+    def _show_summary(self, response, fbid, user):
+        friend_list = user.get_splitwise_friend_list()
         summary_list = []
         for friend in friend_list:
             '''
@@ -230,7 +229,7 @@ class MyApiaiClient(apiai.ApiAI):
         message = '\n'.join(summary_list)
         return message
 
-    def _verify_payer(self, response, fbid, splitwise_creds):
+    def _verify_payer(self, response, fbid, user):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
         payer_list = get_payer_list_from_string(payer_string)

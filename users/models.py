@@ -28,7 +28,7 @@ class RegisteredUser(models.Model):
     splitwise_first_name = models.CharField(max_length=30, null=True)
     splitwise_last_name = models.CharField(max_length=30, null=True)
     splitwise_email = models.CharField(max_length=60, null=True)
-    splitwise_friend_list = JSONField('list of splitwise friends')
+    splitwise_friend_list = JSONField('list of splitwise friends', null=True)
 
     friends = models.ManyToManyField(
         'self',
