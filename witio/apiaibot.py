@@ -137,7 +137,7 @@ class MyApiaiClient(apiai.ApiAI):
             pass
         else:
             # payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
-            payer_names, friend_name_list = user.get_splitwise_matches_from_name_string(payer_string)
+            payer_names, friend_name_list = user.get_splitwise_matches_from_names_string(payer_string)
             print "payer names = " + str(payer_names)
             response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
             print "response string = " + str(response_string)
@@ -166,7 +166,7 @@ class MyApiaiClient(apiai.ApiAI):
             pass
         else:
             # payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
-            payee_names = user.get_splitwise_matches_from_name_string(
+            payee_names = user.get_splitwise_matches_from_names_string(
                 payee_string,
                 friend_name_list=friend_name_list
             )[0]
