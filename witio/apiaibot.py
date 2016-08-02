@@ -254,6 +254,8 @@ class MyApiaiClient(apiai.ApiAI):
         """
         add transaction on splitwise
         """
+        fb.send_message(fbid, 'Cool. Updating splitwise now...')
+
         payer_string = response['result']['parameters']['payers']
         payee_string = response['result']['parameters']['payees']
         amount_paid_string = response['result']['parameters']['amount_paid']
@@ -301,11 +303,12 @@ class MyApiaiClient(apiai.ApiAI):
             description
         )
         print response
-        transaction_id = response.get('id')
-        if transaction_id:
-            message = 'Transaction added successfully. #Debug - id = %s' % (transaction_id)
+        errors = response.get('errors')
+        error_str = errors.get('base')
+        if not errors:
+            message = 'Transaction added successfully!'
         else:
-            message = 'Sorry. Transaction could not be added. #Debug - id = %s' % (transaction_id)
+            message = 'Sorry. Transaction could not be added. Error - %s' % (error_str)
 
         return message
 
