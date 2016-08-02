@@ -53,7 +53,7 @@ class MyApiaiClient(apiai.ApiAI):
         print "context = %s " % contexts
         response = json.loads(request.getresponse().read())
 
-        print 'response' + str(response)
+        # print 'response' + str(response)
 
         try:
             result = response['result']
@@ -64,7 +64,7 @@ class MyApiaiClient(apiai.ApiAI):
         action = result.get('action')
         actionIncomplete = result.get('actionIncomplete', False)
         message = response['result']['fulfillment']['speech']
-        print "message - " + str(message) + "type=" + str(type(message))
+        # print "message - " + str(message) + "type=" + str(type(message))
 
         session = Session.objects.get(session_id=self.session_id)
         fbid = session.fbid
@@ -142,9 +142,9 @@ class MyApiaiClient(apiai.ApiAI):
         else:
             # payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
             payer_names, friend_name_list = user.get_splitwise_matches_from_names_string(payer_string)
-            print "payer names = " + str(payer_names)
+            # print "payer names = " + str(payer_names)
             response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
-            print "response string = " + str(response_string)
+            # print "response string = " + str(response_string)
             if not response_string:
                 # names matched perfectly
                 if payer_names[0]:
@@ -160,7 +160,7 @@ class MyApiaiClient(apiai.ApiAI):
                 payer_string = None
                 added_contexts = None
                 message = 'payees: %s, amount: %s' % (payee_string, amount_paid_string)
-                print 'message = ' + message
+                # print 'message = ' + message
                 self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
                 return None
 
@@ -176,7 +176,7 @@ class MyApiaiClient(apiai.ApiAI):
             )[0]
             print "payee names = " + str(payee_names)
             response_string = stringops.get_response_string_from_matched_names(payee_names, payee=True)
-            print "response string = " + str(response_string)
+            # print "response string = " + str(response_string)
             if not response_string:
                 # names matched perfectly
                 if payee_names[0]:
@@ -192,7 +192,7 @@ class MyApiaiClient(apiai.ApiAI):
                 payee_string = None
                 added_contexts = None
                 message = APIAI_CODE_TAG + 'payer payers: %s, amount: %s' % (payer_string, amount_paid_string)
-                print 'message = ' + message
+                # print 'message = ' + message
                 self.process_text_query(message, added_contexts=added_contexts, reset_contexts=True)
                 return None
 
@@ -303,12 +303,15 @@ class MyApiaiClient(apiai.ApiAI):
             description
         )
         print response
-        errors = response.get('errors')
-        error_str = errors.get('base')
-        if not errors:
-            message = 'Transaction added successfully!'
+        if response:
+            errors = response.get('errors')
+            error_str = errors.get('base')
+            if not errors:
+                message = 'Transaction added successfully!'
+            else:
+                message = 'Sorry. Transaction could not be added. Error - %s' % (error_str)
         else:
-            message = 'Sorry. Transaction could not be added. Error - %s' % (error_str)
+            message = 'Sorry. Transaction could not be added.'
 
         return message
 
