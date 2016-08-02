@@ -254,7 +254,7 @@ class MyApiaiClient(apiai.ApiAI):
         """
         add transaction on splitwise
         """
-        payer_string = response['result']['parameters']['payer']
+        payer_string = response['result']['parameters']['payers']
         payee_string = response['result']['parameters']['payees']
         amount_paid_string = response['result']['parameters']['amount_paid']
         description = response['result']['parameters']['split_name']
