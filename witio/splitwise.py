@@ -30,11 +30,64 @@ def get_splitwise_response(access_token, access_token_secret, protected_uri, *ar
     return response
 
 
+def post_splitwise_request(access_token, access_token_secret, protected_uri, params_dict, *args, **kwargs):
+    oauth = OAuth1Session(
+        client_key,
+        client_secret=client_secret,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+    response = oauth.post(protected_uri, **params_dict)
+    return response
+
+
 def get_user_by_auth(access_token, access_token_secret):
     """ returns splitwise response json for user with input ouath access token
     """
     protected_uri = 'https://secure.splitwise.com/api/v3.0/get_current_user'
     response = get_splitwise_response(access_token, access_token_secret, protected_uri)
+    return response.json()
+
+
+def create_equal_expense(access_token, access_token_secret, participant_list, total_amount, description):
+    """
+    """
+    protected_uri = 'https://secure.splitwise.com/api/v3.0/create_expense'
+    n_payers = len(payers)
+    n_payees = len(payees)
+    amount_paid = total_amount / n_payers
+    amount_split = total_amount / n_payees
+    params_dict = {
+        'payment': False,
+        'cost': total_amount,
+        'description': description,
+    }
+    '''
+    participant_list = []
+    for payer in payers:
+        participant_list.append({'participant': payer, 'payer': True, 'payee': False})
+    for payee in payees:
+        if payee in payers:
+            for participant in participant_list:
+                if participant['participant'] == payee:
+                    participant['payee'] = True
+        else:
+            participant_list.append({'participant': payee, 'payer': False, 'payee': True})
+    '''
+    i = 0
+    for participant, payer, payee in participant_list:
+        payer_dict = {
+            'user_id': participant.id,
+            'email': participant.email,
+            'paid_share': amount_paid if payer else 0,
+            'owed_share': amount_split if payee else 0,
+        }
+        for param in ('user_id', 'email', 'paid_share', 'owed_share'):
+            k = 'users__%d__%s' % (i, param)
+            params_dict[k] = payer_dict[param]
+        i += 1
+
+    response = post_splitwise_request(access_token, access_token_secret, protected_uri, params_dict)
     return response.json()
 
 

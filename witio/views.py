@@ -115,7 +115,7 @@ class WitioView(generic.View):
                         # for apiai implementation
                         bot = MyApiaiClient(session_id=session_id)
                         bot.process_text_query(message)
-                        session.save()
+                        # session.save()
                 else:
                     # fb.send_message(sender, message)
                     pass

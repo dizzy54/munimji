@@ -1,5 +1,6 @@
 import json
-import time
+# import time
+import re
 
 from django.conf import settings
 import apiai
@@ -13,6 +14,7 @@ from witio.models import Session
 CLIENT_ACCESS_TOKEN = settings.APIAI_ACCESS_TOKEN
 
 APIAI_CODE_TAG = '#code!-'
+
 
 class MyApiaiClient(apiai.ApiAI):
     """custom apiai client
@@ -78,7 +80,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
                     if action_func:
-                        action_message = action_func(response, fbid, user)
+                        action_message = action_func(response, fbid, user, session_id)
                         fb.send_long_message(fbid, action_message)
                         # wait to cause delay between this and the next message
                         # time.sleep(2)
@@ -96,9 +98,10 @@ class MyApiaiClient(apiai.ApiAI):
             'split': self._split,
             'verify_payer': self._verify_payer,
             'show_summary': self._show_summary,
+            'set_split': self._set_split,
         }
 
-    def _split(self, response, fbid, user):
+    def _split(self, response, fbid, user, session_id):
         print "split action triggered"
         # payer_missing = False
         # payee_missing = False
@@ -198,9 +201,11 @@ class MyApiaiClient(apiai.ApiAI):
         message = 'Adding transaction of amount %s - paid by %s, between %s, split equally. Is this correct?' % (
             amount_paid_string, payer_string, payee_string
         )
+        bot = MyApiaiClient(session_id=session_id)
+        bot.process_text_query(message)
         return message
 
-    def _show_summary(self, response, fbid, user):
+    def _show_summary(self, response, fbid, user, session_id):
         friend_list = user.get_splitwise_friend_list()
         summary_list = []
         for friend in friend_list:
@@ -230,7 +235,7 @@ class MyApiaiClient(apiai.ApiAI):
         message = '\n'.join(summary_list)
         return message
 
-    def _verify_payer(self, response, fbid, user):
+    def _verify_payer(self, response, fbid, user, session_id):
         print "verify_payer action triggered"
         payer_string = response['result']['parameters']['payer']
         '''
@@ -244,6 +249,52 @@ class MyApiaiClient(apiai.ApiAI):
         message = 'payers: ' + payer_string
         self.process_text_query(message, added_contexts=added_contexts)
         return None
+
+    def _set_split(self, response, fbid, user, session_id):
+        """
+        add transaction on splitwise
+        """
+        payer_string = response['result']['parameters']['payer']
+        payee_string = response['result']['parameters']['payees']
+        amount_paid_string = response['result']['parameters']['amount_paid']
+        description = response['result']['parameters']['split_name']
+
+        total_amount = float(amount_paid_string)
+
+        friend_list = user.get_splitwise_friend_list()
+
+        payer_emails = re.split(',|;|and|&', payer_string)
+        payer_email_list = map(str.strip, payer_emails)
+        payee_emails = re.split(',|;|and|&', payee_string)
+        payee_email_list = map(str.strip, payee_emails)
+
+        participant_list = []
+
+        for friend in friend_list:
+            is_payer = friend['email'] in payer_email_list
+            is_payee = friend['email'] in payee_email_list
+            if is_payer or is_payee:
+                participant_list.append({
+                    'participant': friend,
+                    'payer': is_payer,
+                    'payee': is_payee,
+                })
+
+        access_token, access_token_secret = user.get_splitwise_credentials()
+        response = splitwise.create_equal_expense(
+            access_token,
+            access_token_secret,
+            participant_list,
+            total_amount,
+            description
+        )
+        transaction_id = response.get('id')
+        if transaction_id:
+            message = 'Transaction added successfully. #Debug - id = %s' % (transaction_id)
+        else:
+            message = 'Sorry. Transaction could not be added. #Debug - id = %s' % (transaction_id)
+
+        return message
 
 
 def get_payer_list_from_string(payer_string):
