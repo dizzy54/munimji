@@ -99,7 +99,7 @@ class MyApiaiClient(apiai.ApiAI):
             'verify_payer': self._verify_payer,
             'show_summary': self._show_summary,
             'set_split': self._set_split,
-            'owe_user': self._owe_user,
+            'balance_with_user': self._balance_with_user,
         }
 
     def _split(self, response, fbid, user, session_id):
@@ -324,7 +324,7 @@ class MyApiaiClient(apiai.ApiAI):
 
         return message
 
-    def _owe_user(self, response, fbid, user, session_id):
+    def _balance_with_user(self, response, fbid, user, session_id):
         user_string = response['result']['parameters']['owe_user']
 
         friend_list = user.get_splitwise_friend_list()
