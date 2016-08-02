@@ -150,7 +150,7 @@ class RegisteredUser(models.Model):
             # Unauthenticated
             return None
 
-        return json.loads(splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1]))
+        return splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1])
 
 
 class Relationship(models.Model):

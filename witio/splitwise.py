@@ -81,6 +81,7 @@ def create_equal_expense(access_token, access_token_secret, participant_list, to
     '''
     i = 0
     for participant, payer, payee in participant_list:
+        print '#debug - participant - %s' % (participant)
         payer_dict = {
             'user_id': participant.id,
             'email': participant.email,
