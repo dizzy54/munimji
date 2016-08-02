@@ -53,8 +53,13 @@ def create_equal_expense(access_token, access_token_secret, participant_list, to
     """
     """
     protected_uri = 'https://secure.splitwise.com/api/v3.0/create_expense'
-    n_payers = len(payers)
-    n_payees = len(payees)
+    n_payers = 0
+    n_payees = 0
+    for participant in participant_list:
+        if participant['payer']:
+            n_payers += 1
+        if participant['payee']:
+            n_payees += 1
     amount_paid = total_amount / n_payers
     amount_split = total_amount / n_payees
     params_dict = {

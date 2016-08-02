@@ -143,6 +143,14 @@ class RegisteredUser(models.Model):
         else:
             return None
 
+    def get_user_dict(self):
+        splitwise_creds = self.get_splitwise_credentials()
+        if not splitwise_creds:
+            # Unauthenticated
+            return None
+
+        return splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1])
+
 
 class Relationship(models.Model):
     from_user = models.ForeignKey(RegisteredUser, related_name='from_relationship')

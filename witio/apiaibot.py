@@ -270,6 +270,17 @@ class MyApiaiClient(apiai.ApiAI):
 
         participant_list = []
 
+        # add self if present
+        is_payer = 'you' in payer_email_list
+        is_payee = 'you' in payee_email_list
+        if is_payer or is_payee:
+            participant_list.append({
+                'participant': user.get_user_dict(),
+                'payer': is_payer,
+                'payee': is_payee,
+            })
+
+        # add remaining friends
         for friend in friend_list:
             is_payer = friend['email'] in payer_email_list
             is_payee = friend['email'] in payee_email_list
