@@ -124,9 +124,14 @@ class MyApiaiClient(apiai.ApiAI):
             full_name = first_name + ' ' + last_name
             friend_name_list.append(full_name)
         '''
+        contexts = response['result']['contexts']
+        split_context = None
+        for context in contexts:
+            if context['name'] == 'split':
+                split_context = context
 
-        payer_string = response['result']['parameters']['payer']
-        payee_string = response['result']['parameters']['payees']
+        payer_string = split_context['parameters']['payer.original']
+        payee_string = split_context['parameters']['payees.original']
         amount_paid_string = response['result']['parameters']['amount_paid']
 
         # check if response is tagged by code
