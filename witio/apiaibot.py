@@ -304,9 +304,14 @@ class MyApiaiClient(apiai.ApiAI):
         )
         print response
         if response:
-            errors = response.get('errors')
+            try:
+                errors = response['errors']
+            except:
+                errors = {
+                    'base': 'Bad response'
+                }
             error_str = errors.get('base')
-            if not errors:
+            if not error_str:
                 message = 'Transaction added successfully!'
             else:
                 message = 'Sorry. Transaction could not be added. Error - %s' % (error_str)
