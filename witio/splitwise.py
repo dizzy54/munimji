@@ -83,8 +83,8 @@ def create_equal_expense(access_token, access_token_secret, participant_list, to
     for entry in participant_list:
         participant = entry['participant']
         payer_dict = {
-            'user_id': participant.id,
-            'email': participant.email,
+            'user_id': participant['id'],
+            'email': participant['email'],
             'paid_share': amount_paid if entry['payer'] else 0,
             'owed_share': amount_split if entry['payee'] else 0,
         }
