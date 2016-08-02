@@ -338,11 +338,12 @@ class MyApiaiClient(apiai.ApiAI):
         # print "response string = " + str(response_string)
         if not response_string:
             # names matched perfectly
-            if user_names[0]:
+            user_list = user_names[0]
+            if user_list:
                 # names exist in match_list other than self
                 # user_list = [friend_list[friend[1]] for friend in user_names]
                 # payer_string = ', '.join([friend_list[payer[1]]['email'] for payer in user_names[0]])
-                for user_tuple in user_names:
+                for user_tuple in user_list:
                     friend = friend_list[user_tuple[1]]
                     friend_name = friend_name_list[user_tuple[1]]
                     balance = friend['balance'][0]
