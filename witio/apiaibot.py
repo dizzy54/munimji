@@ -80,7 +80,7 @@ class MyApiaiClient(apiai.ApiAI):
                 if not actionIncomplete:
                     action_func = self.actions().get(action)
                     if action_func:
-                        action_message = action_func(response, fbid, user, session_id)
+                        action_message = action_func(response, fbid, user, self.session_id)
                         fb.send_long_message(fbid, action_message)
                         # wait to cause delay between this and the next message
                         # time.sleep(2)
