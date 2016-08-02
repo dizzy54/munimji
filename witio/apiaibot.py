@@ -263,9 +263,9 @@ class MyApiaiClient(apiai.ApiAI):
 
         friend_list = user.get_splitwise_friend_list()
 
-        payer_emails = re.split(',|;|and|&', payer_string)
+        payer_emails = re.split(',|;|and|&', str(payer_string))
         payer_email_list = map(str.strip, payer_emails)
-        payee_emails = re.split(',|;|and|&', payee_string)
+        payee_emails = re.split(',|;|and|&', str(payee_string))
         payee_email_list = map(str.strip, payee_emails)
 
         participant_list = []
