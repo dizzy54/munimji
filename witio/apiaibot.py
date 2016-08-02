@@ -292,6 +292,9 @@ class MyApiaiClient(apiai.ApiAI):
                 })
 
         access_token, access_token_secret = user.get_splitwise_credentials()
+
+        print participant_list
+
         response = splitwise.create_equal_expense(
             access_token,
             access_token_secret,
