@@ -2,16 +2,18 @@
 from itertools import groupby
 
 
-def get_response_string_from_matched_names(name_response, payee=True):
+def get_response_string_from_matched_names(name_response, entity='payer(s)'):
     """ returns None if all names matched
     else returns a string to be sent to user explaining mismatches
     """
     print "entered response string function"
     matched_index_list, doubt_list, unmatched_entities_list, self_included = name_response
 
+    '''
     entity = 'payee(s)'
     if not payee:
         entity = 'payer(s)'
+    '''
 
     if not doubt_list and not unmatched_entities_list:
         print "all matched"

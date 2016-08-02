@@ -99,6 +99,7 @@ class MyApiaiClient(apiai.ApiAI):
             'verify_payer': self._verify_payer,
             'show_summary': self._show_summary,
             'set_split': self._set_split,
+            'owe_user': self._owe_user,
         }
 
     def _split(self, response, fbid, user, session_id):
@@ -141,9 +142,12 @@ class MyApiaiClient(apiai.ApiAI):
             pass
         else:
             # payer_names = stringops.match_from_name_list(payer_string, friend_name_list)
-            payer_names, friend_name_list = user.get_splitwise_matches_from_names_string(payer_string)
+            payer_names, friend_name_list = user.get_splitwise_matches_from_names_string(
+                payer_string,
+                friend_name_list=friend_name_list
+            )
             # print "payer names = " + str(payer_names)
-            response_string = stringops.get_response_string_from_matched_names(payer_names, payee=False)
+            response_string = stringops.get_response_string_from_matched_names(payer_names, entity='payer(s)')
             # print "response string = " + str(response_string)
             if not response_string:
                 # names matched perfectly
@@ -170,12 +174,12 @@ class MyApiaiClient(apiai.ApiAI):
             pass
         else:
             # payee_names = stringops.match_from_name_list(payee_string, friend_name_list)
-            payee_names = user.get_splitwise_matches_from_names_string(
+            payee_names, friend_name_list = user.get_splitwise_matches_from_names_string(
                 payee_string,
                 friend_name_list=friend_name_list
-            )[0]
+            )
             print "payee names = " + str(payee_names)
-            response_string = stringops.get_response_string_from_matched_names(payee_names, payee=True)
+            response_string = stringops.get_response_string_from_matched_names(payee_names, entity='payee(s)')
             # print "response string = " + str(response_string)
             if not response_string:
                 # names matched perfectly
@@ -319,6 +323,49 @@ class MyApiaiClient(apiai.ApiAI):
             message = 'Sorry. Transaction could not be added.'
 
         return message
+
+    def _owe_user(self, response, fbid, user, session_id):
+        user_string = response['result']['parameters']['owe_user']
+
+        friend_list = user.get_splitwise_friend_list()
+        friend_name_list = user.get_names_from_friend_list(friend_list=friend_list)
+        user_names, friend_name_list = user.get_splitwise_matches_from_names_string(
+            user_string,
+            friend_name_list=friend_name_list,
+        )
+        # print "payer names = " + str(payer_names)
+        response_string = stringops.get_response_string_from_matched_names(user_names, entity='target user(s)')
+        # print "response string = " + str(response_string)
+        if not response_string:
+            # names matched perfectly
+            if user_names[0]:
+                # names exist in match_list other than self
+                # user_list = [friend_list[friend[1]] for friend in user_names]
+                # payer_string = ', '.join([friend_list[payer[1]]['email'] for payer in user_names[0]])
+                for user_tuple in user_names:
+                    friend = friend_list[user_tuple[1]]
+                    friend_name = friend_name_list[user_tuple[1]]
+                    balance = friend['balance'][0]
+                    amount = str(balance['amount'])
+                    currency = balance['currency_code']
+
+                    if amount[0] != '-':
+                        friend_str = '%s - Owes you %s %s' % (friend_name, currency, amount)
+                    else:
+                        friend_str = '%s - You owe %s %s' % (friend_name, currency, amount[1:])
+                    fb.send_message(fbid, friend_str)
+            else:
+                fb.send_message(
+                    fbid,
+                    "Sorry, I couldn't identify your friend to check balance with. Please try again."
+                )
+                # payer_string = 'you'
+        else:
+            fb.send_message(
+                fbid,
+                "Sorry, I couldn't identify your friend to check balance with. Please try again."
+            )
+        return None
 
 
 def get_payer_list_from_string(payer_string):
