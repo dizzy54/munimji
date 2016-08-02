@@ -37,7 +37,7 @@ def post_splitwise_request(access_token, access_token_secret, protected_uri, par
         resource_owner_key=access_token,
         resource_owner_secret=access_token_secret
     )
-    response = oauth.post(protected_uri, json=params_dict)
+    response = oauth.post(protected_uri, data=params_dict)
     return response
 
 

@@ -300,6 +300,7 @@ class MyApiaiClient(apiai.ApiAI):
             total_amount,
             description
         )
+        print response
         transaction_id = response.get('id')
         if transaction_id:
             message = 'Transaction added successfully. #Debug - id = %s' % (transaction_id)
