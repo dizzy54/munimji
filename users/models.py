@@ -9,6 +9,7 @@ from witio import splitwise
 from witio import stringops
 
 import re
+import json
 
 
 class RegisteredUser(models.Model):
@@ -149,7 +150,7 @@ class RegisteredUser(models.Model):
             # Unauthenticated
             return None
 
-        return splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1])
+        return json.loads(splitwise.get_user_by_auth(splitwise_creds[0], splitwise_creds[1]))
 
 
 class Relationship(models.Model):
