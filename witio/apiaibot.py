@@ -127,7 +127,7 @@ class MyApiaiClient(apiai.ApiAI):
         contexts = response['result']['contexts']
         split_context = None
         for context in contexts:
-            if context['name'] == 'split':
+            if context['name'] == 'split_original_params':
                 split_context = context
 
         payer_string = split_context['parameters']['payer.original']
